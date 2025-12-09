@@ -2,16 +2,15 @@ package com.lanhcare.controller;
 
 import com.lanhcare.dto.icd.IcdEntityDTO;
 import com.lanhcare.dto.icd.ReleaseDTO;
+import com.lanhcare.dto.translator.TranslatorResponse;
 import com.lanhcare.entity.ICD11Chapter;
 import com.lanhcare.service.IcdApiService;
+import com.lanhcare.service.TranslatorService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +19,7 @@ import java.util.List;
 @RequestMapping("/test")
 public class TestController {
     private final IcdApiService icdApiService;
+    private final TranslatorService translatorService;
 
     @GetMapping("/icd/access-token")
     @Operation(summary = "Get icd access token", description = "Get icd access token")
@@ -56,5 +56,14 @@ public class TestController {
     public ResponseEntity<?> getChapterEntities() {
         List<ICD11Chapter> chapters = icdApiService.seedICDData();
         return ResponseEntity.status(HttpStatus.CREATED).body(chapters);
+    }
+
+    @PostMapping("/translator")
+    @Operation(summary = "Demo translate text", description = "Demo translate text")
+    public ResponseEntity<?> translateTextToVietnam(
+            @RequestBody String text
+    ) {
+        TranslatorResponse response = translatorService.translateToVietnamese(text);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
