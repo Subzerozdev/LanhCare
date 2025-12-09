@@ -19,6 +19,11 @@ public interface MedicalSpecialtyRepository extends JpaRepository<MedicalSpecial
     List<MedicalSpecialty> findByHospitalId(Integer hospitalId);
     
     /**
+     * Find specialties by hospital ID ordered by Vietnamese name
+     */
+    List<MedicalSpecialty> findByHospitalIdOrderByNameVnAsc(Integer hospitalId);
+    
+    /**
      * Find specialties by hospital ID and status
      */
     List<MedicalSpecialty> findByHospitalIdAndStatus(Integer hospitalId, SpecialtyStatus status);
