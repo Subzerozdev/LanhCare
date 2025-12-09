@@ -114,6 +114,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",           // Authentication endpoints
                                 "/api/public/**",         // Public API endpoints
+                                "/test/**",               // Test API endpoints
                                 "/actuator/health",       // Health check
                                 "/actuator/info",         // Info endpoint
                                 "/v3/api-docs/**",        // OpenAPI docs
