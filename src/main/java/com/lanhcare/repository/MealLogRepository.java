@@ -36,4 +36,9 @@ public interface MealLogRepository extends JpaRepository<MealLog, Integer> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+    
+    /**
+     * Count meal logs by food item
+     */
+    long countByFoodItemId(Integer foodItemId);
 }

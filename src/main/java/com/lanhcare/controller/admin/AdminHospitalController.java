@@ -3,9 +3,13 @@ package com.lanhcare.controller.admin;
 import com.lanhcare.dto.admin.hospital.AdminHospitalRequest;
 import com.lanhcare.dto.admin.hospital.AdminHospitalResponse;
 import com.lanhcare.dto.admin.hospital.AdminSpecialtyRequest;
+import com.lanhcare.dto.admin.hospital.AdminSpecialtyResponse;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.HospitalStatus;
+import com.lanhcare.entity.SpecialtyStatus;
+
+import java.util.List;
 import com.lanhcare.service.admin.AdminHospitalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -107,19 +111,74 @@ public class AdminHospitalController {
         return ResponseEntity.ok(ApiResponse.success("Hospital deleted successfully", null));
     }
     
+    // ========== SPECIALTY MANAGEMENT ==========
+    
+    /**
+     * Get all specialties for a hospital
+     */
+    @GetMapping("/{hospitalId}/specialties")
+    @Operation(summary = "Get hospital specialties", description = "Get all specialties for a specific hospital")
+    public ResponseEntity<ApiResponse<List<AdminSpecialtyResponse>>> getHospitalSpecialties(
+            @PathVariable Integer hospitalId) {
+        
+        List<AdminSpecialtyResponse> specialties = hospitalService.getHospitalSpecialties(hospitalId);
+        return ResponseEntity.ok(ApiResponse.success("Specialties retrieved successfully", specialties));
+    }
+    
+    /**
+     * Get specialty by ID
+     */
+    @GetMapping("/{hospitalId}/specialties/{specialtyId}")
+    @Operation(summary = "Get specialty detail", description = "Get detailed information about a specialty")
+    public ResponseEntity<ApiResponse<AdminSpecialtyResponse>> getSpecialtyById(
+            @PathVariable Integer hospitalId,
+            @PathVariable Integer specialtyId) {
+        
+        AdminSpecialtyResponse specialty = hospitalService.getSpecialtyById(hospitalId, specialtyId);
+        return ResponseEntity.ok(ApiResponse.success("Specialty retrieved successfully", specialty));
+    }
+    
     /**
      * Add specialty to hospital
      */
     @PostMapping("/{hospitalId}/specialties")
     @Operation(summary = "Add specialty", description = "Add a medical specialty to a hospital")
-    public ResponseEntity<ApiResponse<Void>> addSpecialty(
+    public ResponseEntity<ApiResponse<AdminSpecialtyResponse>> addSpecialty(
             @PathVariable Integer hospitalId,
             @Valid @RequestBody AdminSpecialtyRequest request) {
         
-        hospitalService.addSpecialty(hospitalId, request);
+        AdminSpecialtyResponse specialty = hospitalService.addSpecialty(hospitalId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.created("Specialty added successfully", null));
+                .body(ApiResponse.created("Specialty added successfully", specialty));
+    }
+    
+    /**
+     * Update specialty
+     */
+    @PutMapping("/{hospitalId}/specialties/{specialtyId}")
+    @Operation(summary = "Update specialty", description = "Update specialty information")
+    public ResponseEntity<ApiResponse<AdminSpecialtyResponse>> updateSpecialty(
+            @PathVariable Integer hospitalId,
+            @PathVariable Integer specialtyId,
+            @Valid @RequestBody AdminSpecialtyRequest request) {
+        
+        AdminSpecialtyResponse specialty = hospitalService.updateSpecialty(hospitalId, specialtyId, request);
+        return ResponseEntity.ok(ApiResponse.success("Specialty updated successfully", specialty));
+    }
+    
+    /**
+     * Update specialty status
+     */
+    @PatchMapping("/{hospitalId}/specialties/{specialtyId}/status")
+    @Operation(summary = "Update specialty status", description = "Change specialty status")
+    public ResponseEntity<ApiResponse<AdminSpecialtyResponse>> updateSpecialtyStatus(
+            @PathVariable Integer hospitalId,
+            @PathVariable Integer specialtyId,
+            @RequestParam SpecialtyStatus status) {
+        
+        AdminSpecialtyResponse specialty = hospitalService.updateSpecialtyStatus(hospitalId, specialtyId, status);
+        return ResponseEntity.ok(ApiResponse.success("Specialty status updated successfully", specialty));
     }
     
     /**
