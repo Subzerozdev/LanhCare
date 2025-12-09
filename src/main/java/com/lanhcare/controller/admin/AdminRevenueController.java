@@ -1,6 +1,8 @@
 package com.lanhcare.controller.admin;
 
+import com.lanhcare.dto.admin.revenue.AdminCreateTransactionRequest;
 import com.lanhcare.dto.admin.revenue.AdminTransactionResponse;
+import com.lanhcare.dto.admin.revenue.AdminUpdateTransactionStatusRequest;
 import com.lanhcare.dto.admin.revenue.RevenueStatsResponse;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.common.PageResponse;
@@ -9,8 +11,10 @@ import com.lanhcare.service.admin.AdminRevenueService;
 import com.lanhcare.service.admin.ExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,6 +69,49 @@ public class AdminRevenueController {
     public ResponseEntity<ApiResponse<AdminTransactionResponse>> getTransactionById(@PathVariable Integer id) {
         AdminTransactionResponse transaction = revenueService.getTransactionById(id);
         return ResponseEntity.ok(ApiResponse.success("Transaction retrieved successfully", transaction));
+    }
+    
+    /**
+     * Create transaction (manual entry by Admin)
+     */
+    @PostMapping("/transactions")
+    @Operation(summary = "Create transaction", 
+               description = "Create a new transaction manually (for offline payments, adjustments, etc.)")
+    public ResponseEntity<ApiResponse<AdminTransactionResponse>> createTransaction(
+            @Valid @RequestBody AdminCreateTransactionRequest request) {
+        
+        AdminTransactionResponse transaction = revenueService.createTransaction(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.created("Transaction created successfully", transaction));
+    }
+    
+    /**
+     * Update transaction status
+     */
+    @PatchMapping("/transactions/{id}/status")
+    @Operation(summary = "Update transaction status", 
+               description = "Update transaction status. Allowed transitions: " +
+                       "PENDING → COMPLETED/FAILED/CANCELLED, " +
+                       "COMPLETED → REFUNDED, " +
+                       "FAILED → PENDING (retry)")
+    public ResponseEntity<ApiResponse<AdminTransactionResponse>> updateTransactionStatus(
+            @PathVariable Integer id,
+            @Valid @RequestBody AdminUpdateTransactionStatusRequest request) {
+        
+        AdminTransactionResponse transaction = revenueService.updateTransactionStatus(id, request.getStatus());
+        return ResponseEntity.ok(ApiResponse.success("Transaction status updated successfully", transaction));
+    }
+    
+    /**
+     * Delete transaction (soft delete - sets status to CANCELLED)
+     */
+    @DeleteMapping("/transactions/{id}")
+    @Operation(summary = "Delete transaction", 
+               description = "Soft delete a transaction (sets status to CANCELLED)")
+    public ResponseEntity<ApiResponse<Void>> deleteTransaction(@PathVariable Integer id) {
+        revenueService.deleteTransaction(id);
+        return ResponseEntity.ok(ApiResponse.success("Transaction deleted successfully", null));
     }
     
     /**

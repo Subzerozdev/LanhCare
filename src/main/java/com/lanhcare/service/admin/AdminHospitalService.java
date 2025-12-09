@@ -3,6 +3,7 @@ package com.lanhcare.service.admin;
 import com.lanhcare.dto.admin.hospital.AdminHospitalRequest;
 import com.lanhcare.dto.admin.hospital.AdminHospitalResponse;
 import com.lanhcare.dto.admin.hospital.AdminSpecialtyRequest;
+import com.lanhcare.dto.admin.hospital.AdminSpecialtyResponse;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.*;
 import com.lanhcare.exception.ResourceNotFoundException;
@@ -137,10 +138,42 @@ public class AdminHospitalService {
         hospitalRepository.save(hospital);
     }
     
+    // ========== SPECIALTY MANAGEMENT ==========
+    
+    /**
+     * Get all specialties for a hospital
+     */
+    @Transactional(readOnly = true)
+    public List<AdminSpecialtyResponse> getHospitalSpecialties(Integer hospitalId) {
+        // Verify hospital exists
+        if (!hospitalRepository.existsById(hospitalId)) {
+            throw new ResourceNotFoundException("Hospital not found with ID: " + hospitalId);
+        }
+        
+        return specialtyRepository.findByHospitalIdOrderByNameVnAsc(hospitalId).stream()
+                .map(this::mapToSpecialtyResponse)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Get specialty by ID
+     */
+    @Transactional(readOnly = true)
+    public AdminSpecialtyResponse getSpecialtyById(Integer hospitalId, Integer specialtyId) {
+        MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Specialty not found with ID: " + specialtyId));
+        
+        if (!specialty.getHospital().getId().equals(hospitalId)) {
+            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
+        }
+        
+        return mapToSpecialtyResponse(specialty);
+    }
+    
     /**
      * Add specialty to hospital
      */
-    public void addSpecialty(Integer hospitalId, AdminSpecialtyRequest request) {
+    public AdminSpecialtyResponse addSpecialty(Integer hospitalId, AdminSpecialtyRequest request) {
         Hospital hospital = hospitalRepository.findById(hospitalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + hospitalId));
         
@@ -148,10 +181,51 @@ public class AdminHospitalService {
                 .hospital(hospital)
                 .nameVn(request.getNameVn())
                 .nameEn(request.getNameEn())
-                .status(request.getStatus())
+                .status(request.getStatus() != null ? request.getStatus() : SpecialtyStatus.ACTIVE)
                 .build();
         
-        specialtyRepository.save(specialty);
+        MedicalSpecialty saved = specialtyRepository.save(specialty);
+        return mapToSpecialtyResponse(saved);
+    }
+    
+    /**
+     * Update specialty
+     */
+    public AdminSpecialtyResponse updateSpecialty(Integer hospitalId, Integer specialtyId, 
+                                                   AdminSpecialtyRequest request) {
+        MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Specialty not found with ID: " + specialtyId));
+        
+        if (!specialty.getHospital().getId().equals(hospitalId)) {
+            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
+        }
+        
+        specialty.setNameVn(request.getNameVn());
+        specialty.setNameEn(request.getNameEn());
+        
+        if (request.getStatus() != null) {
+            specialty.setStatus(request.getStatus());
+        }
+        
+        MedicalSpecialty updated = specialtyRepository.save(specialty);
+        return mapToSpecialtyResponse(updated);
+    }
+    
+    /**
+     * Update specialty status
+     */
+    public AdminSpecialtyResponse updateSpecialtyStatus(Integer hospitalId, Integer specialtyId, 
+                                                         SpecialtyStatus status) {
+        MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Specialty not found with ID: " + specialtyId));
+        
+        if (!specialty.getHospital().getId().equals(hospitalId)) {
+            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
+        }
+        
+        specialty.setStatus(status);
+        MedicalSpecialty updated = specialtyRepository.save(specialty);
+        return mapToSpecialtyResponse(updated);
     }
     
     /**
@@ -182,5 +256,24 @@ public class AdminHospitalService {
                 .status(hospital.getStatus())
                 .specialtyCount((int) specialtyCount)
                 .build();
+    }
+    
+    private AdminSpecialtyResponse mapToSpecialtyResponse(MedicalSpecialty specialty) {
+        AdminSpecialtyResponse.AdminSpecialtyResponseBuilder builder = AdminSpecialtyResponse.builder()
+                .id(specialty.getId())
+                .nameVn(specialty.getNameVn())
+                .nameEn(specialty.getNameEn())
+                .status(specialty.getStatus())
+                .hospitalId(specialty.getHospital().getId())
+                .hospitalName(specialty.getHospital().getName());
+        
+        // Add ICD-11 info if linked
+        if (specialty.getIcdCode() != null) {
+            builder.icdUri(specialty.getIcdCode().getIcdUri())
+                    .icdCode(specialty.getIcdCode().getIcdCode())
+                    .icdTitle(specialty.getIcdCode().getOriginalTitleEn());
+        }
+        
+        return builder.build();
     }
 }

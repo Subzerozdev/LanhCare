@@ -77,6 +77,71 @@ public class AdminNutritionController {
         return ResponseEntity.ok(ApiResponse.success("Food item deleted successfully", null));
     }
     
+    /**
+     * Get food item detail by ID (includes nutrients)
+     */
+    @GetMapping("/food-items/{id}")
+    @Operation(summary = "Get food item detail", description = "Get detailed information about a food item including nutrients")
+    public ResponseEntity<ApiResponse<AdminFoodItemDetailResponse>> getFoodItemById(@PathVariable Integer id) {
+        AdminFoodItemDetailResponse food = nutritionService.getFoodItemById(id);
+        return ResponseEntity.ok(ApiResponse.success("Food item retrieved successfully", food));
+    }
+    
+    // ========== FOOD ITEM NUTRIENTS ==========
+    
+    /**
+     * Get all nutrients for a food item
+     */
+    @GetMapping("/food-items/{foodItemId}/nutrients")
+    @Operation(summary = "Get food item nutrients", description = "Get all nutrients for a specific food item")
+    public ResponseEntity<ApiResponse<List<AdminFoodNutrientResponse>>> getFoodNutrients(
+            @PathVariable Integer foodItemId) {
+        List<AdminFoodNutrientResponse> nutrients = nutritionService.getFoodNutrients(foodItemId);
+        return ResponseEntity.ok(ApiResponse.success("Food nutrients retrieved successfully", nutrients));
+    }
+    
+    /**
+     * Add nutrient to food item
+     */
+    @PostMapping("/food-items/{foodItemId}/nutrients")
+    @Operation(summary = "Add nutrient to food item", description = "Add a nutrient value to a food item")
+    public ResponseEntity<ApiResponse<AdminFoodNutrientResponse>> addFoodNutrient(
+            @PathVariable Integer foodItemId,
+            @Valid @RequestBody AdminFoodNutrientRequest request) {
+        
+        AdminFoodNutrientResponse nutrient = nutritionService.addFoodNutrient(foodItemId, request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.created("Food nutrient added successfully", nutrient));
+    }
+    
+    /**
+     * Update nutrient value for food item
+     */
+    @PutMapping("/food-items/{foodItemId}/nutrients/{nutrientId}")
+    @Operation(summary = "Update food nutrient", description = "Update nutrient value for a food item")
+    public ResponseEntity<ApiResponse<AdminFoodNutrientResponse>> updateFoodNutrient(
+            @PathVariable Integer foodItemId,
+            @PathVariable Integer nutrientId,
+            @Valid @RequestBody AdminFoodNutrientRequest request) {
+        
+        AdminFoodNutrientResponse nutrient = nutritionService.updateFoodNutrient(foodItemId, nutrientId, request);
+        return ResponseEntity.ok(ApiResponse.success("Food nutrient updated successfully", nutrient));
+    }
+    
+    /**
+     * Remove nutrient from food item
+     */
+    @DeleteMapping("/food-items/{foodItemId}/nutrients/{nutrientId}")
+    @Operation(summary = "Remove food nutrient", description = "Remove a nutrient from a food item")
+    public ResponseEntity<ApiResponse<Void>> removeFoodNutrient(
+            @PathVariable Integer foodItemId,
+            @PathVariable Integer nutrientId) {
+        
+        nutritionService.removeFoodNutrient(foodItemId, nutrientId);
+        return ResponseEntity.ok(ApiResponse.success("Food nutrient removed successfully", null));
+    }
+    
     // ========== FOOD TYPES ==========
     
     @GetMapping("/food-types")
@@ -95,6 +160,16 @@ public class AdminNutritionController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.created("Food type created successfully", foodType));
+    }
+    
+    @PutMapping("/food-types/{id}")
+    @Operation(summary = "Update food type", description = "Update food type name")
+    public ResponseEntity<ApiResponse<FoodType>> updateFoodType(
+            @PathVariable Integer id,
+            @Valid @RequestBody AdminFoodTypeRequest request) {
+        
+        FoodType foodType = nutritionService.updateFoodType(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Food type updated successfully", foodType));
     }
     
     @DeleteMapping("/food-types/{id}")
@@ -122,6 +197,16 @@ public class AdminNutritionController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.created("Nutrient created successfully", nutrient));
+    }
+    
+    @PutMapping("/nutrients/{id}")
+    @Operation(summary = "Update nutrient", description = "Update nutrient name and unit")
+    public ResponseEntity<ApiResponse<Nutrient>> updateNutrient(
+            @PathVariable Integer id,
+            @Valid @RequestBody AdminNutrientRequest request) {
+        
+        Nutrient nutrient = nutritionService.updateNutrient(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Nutrient updated successfully", nutrient));
     }
     
     @DeleteMapping("/nutrients/{id}")
