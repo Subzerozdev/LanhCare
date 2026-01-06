@@ -1,9 +1,10 @@
 package com.lanhcare.entity;
 
 public enum ActivityLevel {
-    SEDENTARY,
-    LIGHT,
-    MODERATE,
-    ACTIVE,
-    VERY_ACTIVE
+    NO_EXERCISE,      // Không vận động / ngồi nhiều
+    LIGHT_EXERCISE,   // Vận động nhẹ
+    NORMAL_EXERCISE,  // Vận động mức trung bình
+    HIGH_EXERCISE,    // Vận động nhiều
+    VERY_HIGH_EXERCISE // Vận động rất nhiều
 }
+

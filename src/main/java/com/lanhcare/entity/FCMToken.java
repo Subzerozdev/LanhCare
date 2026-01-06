@@ -26,10 +26,6 @@ public class FCMToken {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String token;
     
-    @Enumerated(EnumType.STRING)
-    @Column(name = "deviceType", length = 50)
-    private DeviceType deviceType;
-    
     @CreationTimestamp
     @Column(name = "createdAt", updatable = false)
     private LocalDateTime createdAt;

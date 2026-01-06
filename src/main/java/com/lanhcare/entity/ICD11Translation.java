@@ -26,10 +26,6 @@ public class ICD11Translation {
     private String vnDefinition;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "review_status", length = 50)
-    private ReviewStatus reviewStatus;
-    
-    @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private TranslationStatus status;
 }
