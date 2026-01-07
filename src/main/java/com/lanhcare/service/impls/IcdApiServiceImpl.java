@@ -4,6 +4,7 @@ import com.lanhcare.dto.icd.IcdEntityDTO;
 import com.lanhcare.dto.icd.IcdTokenResponse;
 import com.lanhcare.dto.icd.ReleaseDTO;
 import com.lanhcare.entity.ICD11Chapter;
+import com.lanhcare.entity.ICD11Code;
 import com.lanhcare.entity.ICD11Status;
 import com.lanhcare.repository.IcdChapterRepository;
 import com.lanhcare.service.IcdApiService;
@@ -46,16 +47,37 @@ public class IcdApiServiceImpl implements IcdApiService {
     @Override
     public List<ICD11Chapter> seedICDData() {
         List<String> chapterCodes = getChapterCodes(fetchReleaseChapters());
-        List<IcdEntityDTO> chapters = new ArrayList<>();
-        List<ICD11Chapter> chapterEntities = new ArrayList<>();
+        List<ICD11Chapter> chapters = new ArrayList<>();
 
         for (String chapterCode : chapterCodes) {
             IcdEntityDTO entityDTO = fetchIcdEntity(chapterCode);
-            chapterEntities.add(mapToICD11Chapter(entityDTO));
-            chapters.add(entityDTO);
+            ICD11Chapter convertEntity = mapToICD11Chapter(entityDTO);
+            convertEntity.getCodes().clear();
+            convertEntity.getCodes().addAll(
+                    seedICDChildren(entityDTO.getChildren(), convertEntity, null)
+            );
+            chapters.add(convertEntity);
         }
 
-        return chapterEntities;
+        icdChapterRepository.saveAll(chapters);
+        return chapters;
+    }
+
+    private List<ICD11Code> seedICDChildren(List<String> children, ICD11Chapter chapter, ICD11Code parentCode) {
+        if (children == null || children.isEmpty()) {return List.of();}
+
+        List<ICD11Code> codes = new ArrayList<>();
+        for (String code : children) {
+            IcdEntityDTO entityDTO = fetchIcdEntity(code);
+            ICD11Code convertEntity = mapToICD11Code(entityDTO, chapter, parentCode);
+            convertEntity.getChildren().clear();
+            convertEntity.getChildren().addAll(
+                    seedICDChildren(entityDTO.getChildren(), null, convertEntity)
+            );
+            codes.add(convertEntity);
+        }
+
+        return codes;
     }
 
     /// Lấy thông tin cơ bản của Linearization
@@ -138,4 +160,15 @@ public class IcdApiServiceImpl implements IcdApiService {
                 .build();
     }
 
+    /// Hàm hỗ trợ: Chuyển đổi ICD entity sang ICD code (own database)
+    private ICD11Code mapToICD11Code(IcdEntityDTO icdEntityDTO, ICD11Chapter icd11Chapter, ICD11Code parent) {
+        return ICD11Code.builder()
+                .icdUri(icdEntityDTO.getIcdUri())
+                .chapter(icd11Chapter)
+                .parent(parent)
+                .originalTitleEn(icdEntityDTO.getOriginalTitleEn().getValue())
+                .definitionEn(icdEntityDTO.getDefinitionEn().getValue())
+                .status(ICD11Status.ACTIVE)
+                .build();
+    }
 }

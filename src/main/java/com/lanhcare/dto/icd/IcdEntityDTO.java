@@ -26,7 +26,7 @@ public class IcdEntityDTO {
     private IcdTextDTO definitionEn;
 
     @JsonProperty(value = "classKind")
-    private String type;
+    private String classKind;
 
     @JsonProperty(value = "parent")
     private List<String> parentUri;
