@@ -1,4 +1,4 @@
-package com.lanhcare.entity;
+package com.lanhcare.enums;
 
 public enum ActivityLevel {
     NO_EXERCISE,      // Không vận động / ngồi nhiều

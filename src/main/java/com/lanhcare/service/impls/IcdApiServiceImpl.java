@@ -5,7 +5,7 @@ import com.lanhcare.dto.icd.IcdTokenResponse;
 import com.lanhcare.dto.icd.ReleaseDTO;
 import com.lanhcare.entity.ICD11Chapter;
 import com.lanhcare.entity.ICD11Code;
-import com.lanhcare.entity.ICD11Status;
+import com.lanhcare.enums.ICD11Status;
 import com.lanhcare.repository.IcdChapterRepository;
 import com.lanhcare.service.IcdApiService;
 import lombok.RequiredArgsConstructor;

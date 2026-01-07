@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.MealType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

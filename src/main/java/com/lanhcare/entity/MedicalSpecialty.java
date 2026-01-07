@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.SpecialtyStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.FoodItemStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

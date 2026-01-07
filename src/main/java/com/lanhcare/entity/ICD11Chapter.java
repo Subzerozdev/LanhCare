@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.ICD11Status;
 import jakarta.persistence.*;
 import lombok.*;
 

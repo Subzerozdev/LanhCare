@@ -1,6 +1,7 @@
 package com.lanhcare.security;
 
 import com.lanhcare.entity.Account;
+import com.lanhcare.enums.AccountStatus;
 import com.lanhcare.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
-                .disabled(account.getStatus() != com.lanhcare.entity.AccountStatus.ACTIVE)
+                .disabled(account.getStatus() != AccountStatus.ACTIVE)
                 .build();
     }
     
@@ -66,7 +67,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
-                .disabled(account.getStatus() != com.lanhcare.entity.AccountStatus.ACTIVE)
+                .disabled(account.getStatus() != AccountStatus.ACTIVE)
                 .build();
     }
 }

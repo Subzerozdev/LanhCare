@@ -1,6 +1,6 @@
 package com.lanhcare.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.lanhcare.enums.ICD11Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

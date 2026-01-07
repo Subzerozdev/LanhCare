@@ -1,7 +1,7 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.ServicePlan;
-import com.lanhcare.entity.ServicePlanStatus;
+import com.lanhcare.enums.ServicePlanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

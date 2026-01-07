@@ -1,8 +1,7 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.ICD11Translation;
-import com.lanhcare.entity.ReviewStatus;
-import com.lanhcare.entity.TranslationStatus;
+import com.lanhcare.enums.TranslationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,7 +41,7 @@ public interface ICD11TranslationRepository extends JpaRepository<ICD11Translati
     /**
      * Find by review status with pagination
      */
-    Page<ICD11Translation> findByReviewStatusOrderByIdDesc(ReviewStatus reviewStatus, Pageable pageable);
+    Page<ICD11Translation> findByReviewStatusOrderByIdDesc(Pageable pageable);
     
     /**
      * Search translations
@@ -76,11 +75,7 @@ public interface ICD11TranslationRepository extends JpaRepository<ICD11Translati
      * Count by status
      */
     long countByStatus(TranslationStatus status);
-    
-    /**
-     * Count by review status
-     */
-    long countByReviewStatus(ReviewStatus reviewStatus);
+
     
     /**
      * Check if translation exists for a code
