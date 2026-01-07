@@ -1,6 +1,6 @@
 package com.lanhcare.dto.admin.revenue;
 
-import com.lanhcare.entity.TransactionStatus;
+import com.lanhcare.enums.TransactionStatus;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

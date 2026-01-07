@@ -3,6 +3,8 @@ package com.lanhcare.service.admin;
 import com.lanhcare.dto.admin.icd11.*;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.*;
+import com.lanhcare.enums.ICD11Status;
+import com.lanhcare.enums.TranslationStatus;
 import com.lanhcare.exception.ResourceAlreadyExistsException;
 import com.lanhcare.exception.ResourceNotFoundException;
 import com.lanhcare.repository.ICD11ChapterRepository;
@@ -218,8 +220,6 @@ public class AdminICD11Service {
                 .originalTitleEn(request.getOriginalTitleEn())
                 .definitionEn(request.getDefinitionEn())
                 .exclusionTermsEn(request.getExclusionTermsEn())
-                .isResidualCategory(request.getIsResidualCategory())
-                .isLeaf(request.getIsLeaf())
                 .lastSynced(LocalDateTime.now())
                 .status(request.getStatus() != null ? request.getStatus() : ICD11Status.ACTIVE);
         
@@ -252,8 +252,6 @@ public class AdminICD11Service {
         code.setOriginalTitleEn(request.getOriginalTitleEn());
         code.setDefinitionEn(request.getDefinitionEn());
         code.setExclusionTermsEn(request.getExclusionTermsEn());
-        code.setIsResidualCategory(request.getIsResidualCategory());
-        code.setIsLeaf(request.getIsLeaf());
         code.setLastSynced(LocalDateTime.now());
         
         if (request.getStatus() != null) {
@@ -435,8 +433,6 @@ public class AdminICD11Service {
                 .originalTitleEn(code.getOriginalTitleEn())
                 .definitionEn(code.getDefinitionEn())
                 .exclusionTermsEn(code.getExclusionTermsEn())
-                .isResidualCategory(code.getIsResidualCategory())
-                .isLeaf(code.getIsLeaf())
                 .lastSynced(code.getLastSynced())
                 .status(code.getStatus());
         

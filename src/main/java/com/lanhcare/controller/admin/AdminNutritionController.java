@@ -3,7 +3,7 @@ package com.lanhcare.controller.admin;
 import com.lanhcare.dto.admin.nutrition.*;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.common.PageResponse;
-import com.lanhcare.entity.FoodItemStatus;
+import com.lanhcare.enums.FoodItemStatus;
 import com.lanhcare.entity.FoodType;
 import com.lanhcare.entity.Nutrient;
 import com.lanhcare.service.admin.AdminNutritionService;

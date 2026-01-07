@@ -1,6 +1,6 @@
 package com.lanhcare.dto.admin.nutrition;
 
-import com.lanhcare.entity.FoodItemStatus;
+import com.lanhcare.enums.FoodItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

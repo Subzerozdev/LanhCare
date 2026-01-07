@@ -1,6 +1,6 @@
 package com.lanhcare.dto.admin.icd11;
 
-import com.lanhcare.entity.TranslationStatus;
+import com.lanhcare.enums.TranslationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.lanhcare.dto.admin.hospital;
 
-import com.lanhcare.entity.SpecialtyStatus;
+import com.lanhcare.enums.SpecialtyStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

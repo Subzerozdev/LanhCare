@@ -1,6 +1,6 @@
 package com.lanhcare.dto.admin.hospital;
 
-import com.lanhcare.entity.SpecialtyStatus;
+import com.lanhcare.enums.SpecialtyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
