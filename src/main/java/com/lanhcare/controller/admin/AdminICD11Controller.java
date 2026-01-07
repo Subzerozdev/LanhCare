@@ -4,7 +4,6 @@ import com.lanhcare.dto.admin.icd11.*;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.ICD11Status;
-import com.lanhcare.entity.ReviewStatus;
 import com.lanhcare.entity.TranslationStatus;
 import com.lanhcare.service.admin.AdminICD11Service;
 import io.swagger.v3.oas.annotations.Operation;
@@ -221,12 +220,11 @@ public class AdminICD11Controller {
     public ResponseEntity<ApiResponse<PageResponse<AdminICD11TranslationResponse>>> getAllTranslations(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) TranslationStatus status,
-            @RequestParam(required = false) ReviewStatus reviewStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         
         PageResponse<AdminICD11TranslationResponse> translations = 
-                icd11Service.getAllTranslations(search, status, reviewStatus, page, size);
+                icd11Service.getAllTranslations(search, status, page, size);
         return ResponseEntity.ok(ApiResponse.success("Translations retrieved successfully", translations));
     }
     
@@ -280,16 +278,16 @@ public class AdminICD11Controller {
     }
     
     /**
-     * Update translation review status
+     * Update translation status
      */
-    @PatchMapping("/translations/{id}/review")
-    @Operation(summary = "Update review status", description = "Change translation review status (auto-publishes if APPROVED)")
-    public ResponseEntity<ApiResponse<AdminICD11TranslationResponse>> updateTranslationReviewStatus(
+    @PatchMapping("/translations/{id}/status")
+    @Operation(summary = "Update translation status", description = "Change translation status")
+    public ResponseEntity<ApiResponse<AdminICD11TranslationResponse>> updateTranslationStatus(
             @PathVariable Integer id,
-            @RequestParam ReviewStatus reviewStatus) {
+            @RequestParam TranslationStatus status) {
         
-        AdminICD11TranslationResponse translation = icd11Service.updateTranslationReviewStatus(id, reviewStatus);
-        return ResponseEntity.ok(ApiResponse.success("Translation review status updated successfully", translation));
+        AdminICD11TranslationResponse translation = icd11Service.updateTranslationStatus(id, status);
+        return ResponseEntity.ok(ApiResponse.success("Translation status updated successfully", translation));
     }
     
     /**

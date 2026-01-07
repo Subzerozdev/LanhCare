@@ -1,6 +1,5 @@
 package com.lanhcare.dto.admin.icd11;
 
-import com.lanhcare.entity.ReviewStatus;
 import com.lanhcare.entity.TranslationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +18,6 @@ public class AdminICD11TranslationResponse {
     private Integer id;
     private String vnTitle;
     private String vnDefinition;
-    private ReviewStatus reviewStatus;
     private TranslationStatus status;
     
     // ICD Code info

@@ -5,9 +5,7 @@ import com.lanhcare.dto.icd.IcdTokenResponse;
 import com.lanhcare.dto.icd.ReleaseDTO;
 import com.lanhcare.entity.ICD11Chapter;
 import com.lanhcare.entity.ICD11Status;
-import com.lanhcare.repository.IcdChapterRepository;
 import com.lanhcare.service.IcdApiService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,9 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class IcdApiServiceImpl implements IcdApiService {
-    private final IcdChapterRepository icdChapterRepository;
 
     @Value("${icd.client.id}")
     private String clientId;

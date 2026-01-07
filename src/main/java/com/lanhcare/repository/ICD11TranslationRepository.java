@@ -1,7 +1,6 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.ICD11Translation;
-import com.lanhcare.entity.ReviewStatus;
 import com.lanhcare.entity.TranslationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,11 +39,6 @@ public interface ICD11TranslationRepository extends JpaRepository<ICD11Translati
     Page<ICD11Translation> findByStatusOrderByIdDesc(TranslationStatus status, Pageable pageable);
     
     /**
-     * Find by review status with pagination
-     */
-    Page<ICD11Translation> findByReviewStatusOrderByIdDesc(ReviewStatus reviewStatus, Pageable pageable);
-    
-    /**
      * Search translations
      */
     @Query("SELECT t FROM ICD11Translation t WHERE " +
@@ -68,19 +62,9 @@ public interface ICD11TranslationRepository extends JpaRepository<ICD11Translati
                                                        Pageable pageable);
     
     /**
-     * Find translations pending review
-     */
-    Page<ICD11Translation> findByReviewStatusInOrderByIdDesc(List<ReviewStatus> reviewStatuses, Pageable pageable);
-    
-    /**
      * Count by status
      */
     long countByStatus(TranslationStatus status);
-    
-    /**
-     * Count by review status
-     */
-    long countByReviewStatus(ReviewStatus reviewStatus);
     
     /**
      * Check if translation exists for a code

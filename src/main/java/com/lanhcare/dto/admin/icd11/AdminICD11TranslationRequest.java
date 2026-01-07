@@ -1,6 +1,5 @@
 package com.lanhcare.dto.admin.icd11;
 
-import com.lanhcare.entity.ReviewStatus;
 import com.lanhcare.entity.TranslationStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -24,9 +23,6 @@ public class AdminICD11TranslationRequest {
     private String vnTitle;
     
     private String vnDefinition;
-    
-    @Builder.Default
-    private ReviewStatus reviewStatus = ReviewStatus.PENDING;
     
     @Builder.Default
     private TranslationStatus status = TranslationStatus.DRAFT;
