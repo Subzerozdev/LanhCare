@@ -6,7 +6,7 @@ echo.
 echo Select which logs to view:
 echo   1. All services
 echo   2. App only
-echo   3. MySQL only
+echo   3. PostgreSQL only
 echo.
 set /p choice="Enter your choice (1-3): "
 
@@ -20,8 +20,8 @@ if "%choice%"=="1" (
     docker-compose logs -f app
 ) else if "%choice%"=="3" (
     echo.
-    echo Viewing MySQL logs...
-    docker-compose logs -f mysql
+    echo Viewing PostgreSQL logs...
+    docker-compose logs -f postgres
 ) else (
     echo Invalid choice!
     pause

@@ -41,11 +41,11 @@ echo Swagger UI:       http://localhost:8080/swagger-ui.html
 echo API Docs:         http://localhost:8080/v3/api-docs
 echo Health Check:     http://localhost:8080/actuator/health
 echo.
-echo MySQL Workbench:
+echo PostgreSQL Connection:
 echo   Host: localhost
-echo   Port: 3306
-echo   User: root
-echo   Pass: rootpassword
+echo   Port: 5432
+echo   User: postgres
+echo   Pass: postgres
 echo   DB:   health_app_db
 echo.
 echo ================================

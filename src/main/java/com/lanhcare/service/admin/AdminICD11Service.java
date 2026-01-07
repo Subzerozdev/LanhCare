@@ -311,7 +311,6 @@ public class AdminICD11Service {
     @Transactional(readOnly = true)
     public PageResponse<AdminICD11TranslationResponse> getAllTranslations(String search, 
                                                                            TranslationStatus status,
-                                                                           ReviewStatus reviewStatus,
                                                                            int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ICD11Translation> translationPage;
@@ -320,8 +319,6 @@ public class AdminICD11Service {
             translationPage = translationRepository.searchTranslationsByStatus(search, status, pageable);
         } else if (search != null && !search.isEmpty()) {
             translationPage = translationRepository.searchTranslations(search, pageable);
-        } else if (reviewStatus != null) {
-            translationPage = translationRepository.findByReviewStatusOrderByIdDesc(reviewStatus, pageable);
         } else if (status != null) {
             translationPage = translationRepository.findByStatusOrderByIdDesc(status, pageable);
         } else {
@@ -366,7 +363,6 @@ public class AdminICD11Service {
                 .icdCode(code)
                 .vnTitle(request.getVnTitle())
                 .vnDefinition(request.getVnDefinition())
-                .reviewStatus(request.getReviewStatus() != null ? request.getReviewStatus() : ReviewStatus.PENDING)
                 .status(request.getStatus() != null ? request.getStatus() : TranslationStatus.DRAFT)
                 .build();
         
@@ -384,10 +380,6 @@ public class AdminICD11Service {
         translation.setVnTitle(request.getVnTitle());
         translation.setVnDefinition(request.getVnDefinition());
         
-        if (request.getReviewStatus() != null) {
-            translation.setReviewStatus(request.getReviewStatus());
-        }
-        
         if (request.getStatus() != null) {
             translation.setStatus(request.getStatus());
         }
@@ -397,18 +389,13 @@ public class AdminICD11Service {
     }
     
     /**
-     * Update translation review status
+     * Update translation status
      */
-    public AdminICD11TranslationResponse updateTranslationReviewStatus(Integer id, ReviewStatus reviewStatus) {
+    public AdminICD11TranslationResponse updateTranslationStatus(Integer id, TranslationStatus status) {
         ICD11Translation translation = translationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Translation not found with ID: " + id));
         
-        translation.setReviewStatus(reviewStatus);
-        
-        // Auto publish if approved
-        if (reviewStatus == ReviewStatus.APPROVED) {
-            translation.setStatus(TranslationStatus.PUBLISHED);
-        }
+        translation.setStatus(status);
         
         ICD11Translation updated = translationRepository.save(translation);
         return mapTranslationToResponse(updated);
@@ -492,7 +479,6 @@ public class AdminICD11Service {
                         .id(translation.getId())
                         .vnTitle(translation.getVnTitle())
                         .vnDefinition(translation.getVnDefinition())
-                        .reviewStatus(translation.getReviewStatus())
                         .status(translation.getStatus());
         
         // ICD Code info
