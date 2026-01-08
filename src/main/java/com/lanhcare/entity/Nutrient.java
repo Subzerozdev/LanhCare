@@ -24,6 +24,10 @@ public class Nutrient {
     @Column(length = 20)
     private String unit;
     
+    @Column(name = "is_deleted")
+    @Builder.Default
+    private Boolean isDeleted = false;
+    
     // Relationships
     @OneToMany(mappedBy = "nutrient", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

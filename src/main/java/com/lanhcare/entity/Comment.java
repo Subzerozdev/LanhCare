@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.CommentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,7 +24,16 @@ public class Comment {
     private String content;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    @Builder.Default
+    private CommentStatus status = CommentStatus.PENDING;
+    
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
 
     @Column(name = "created_at")
     @CreationTimestamp

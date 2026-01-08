@@ -231,7 +231,7 @@ public class AdminHospitalService {
     }
     
     /**
-     * Delete specialty
+     * Delete specialty (soft delete - set status to INACTIVE)
      */
     public void deleteSpecialty(Integer hospitalId, Integer specialtyId) {
         MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
@@ -241,7 +241,9 @@ public class AdminHospitalService {
             throw new ResourceNotFoundException("Specialty does not belong to this hospital");
         }
         
-        specialtyRepository.delete(specialty);
+        // Soft delete - set status to INACTIVE
+        specialty.setStatus(SpecialtyStatus.INACTIVE);
+        specialtyRepository.save(specialty);
     }
     
     // ========== Helper Methods ==========
