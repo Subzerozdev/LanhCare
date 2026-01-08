@@ -95,10 +95,5 @@ public interface ICD11CodeRepository extends JpaRepository<ICD11Code, String> {
      * Count by chapter
      */
     long countByChapterChapterUri(String chapterUri);
-    
-    /**
-     * Find leaf codes only
-     */
-    Page<ICD11Code> findByIsLeafTrueOrderByIcdCodeAsc(Pageable pageable);
 }
 

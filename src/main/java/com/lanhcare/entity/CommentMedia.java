@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "post_media")
+@Table(name = "CommentMedia")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostMedia {
+public class CommentMedia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -20,10 +20,7 @@ public class PostMedia {
     @Column(name = "media_type", length = 20)
     private String mediaType;
 
-    @Column(name = "order_index")
-    private Integer orderIndex;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "comment_id", nullable = false)
+    private Comment comment;
 }

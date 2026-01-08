@@ -22,6 +22,9 @@ public class Comment {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -42,8 +45,7 @@ public class Comment {
     @Builder.Default
     private List<Comment> replies = new ArrayList<>();
 
-    // Media trong comment (Ảnh/Video)
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PostMedia> mediaList = new ArrayList<>();
+    private List<CommentMedia> mediaList = new ArrayList<>();
 }
