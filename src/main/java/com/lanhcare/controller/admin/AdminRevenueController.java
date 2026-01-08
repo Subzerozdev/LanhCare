@@ -6,7 +6,7 @@ import com.lanhcare.dto.admin.revenue.AdminUpdateTransactionStatusRequest;
 import com.lanhcare.dto.admin.revenue.RevenueStatsResponse;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.common.PageResponse;
-import com.lanhcare.entity.TransactionStatus;
+import com.lanhcare.enums.TransactionStatus;
 import com.lanhcare.service.admin.AdminRevenueService;
 import com.lanhcare.service.admin.ExportService;
 import io.swagger.v3.oas.annotations.Operation;

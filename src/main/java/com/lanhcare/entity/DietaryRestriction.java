@@ -1,5 +1,8 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.Frequency;
+import com.lanhcare.enums.LimitType;
+import com.lanhcare.enums.RestrictionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

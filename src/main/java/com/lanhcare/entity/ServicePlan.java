@@ -1,5 +1,7 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.PeriodUnit;
+import com.lanhcare.enums.ServicePlanStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

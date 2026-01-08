@@ -1,7 +1,7 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.MedicalSpecialty;
-import com.lanhcare.entity.SpecialtyStatus;
+import com.lanhcare.enums.SpecialtyStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

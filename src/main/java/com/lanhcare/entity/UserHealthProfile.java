@@ -1,5 +1,7 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.ActivityLevel;
+import com.lanhcare.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

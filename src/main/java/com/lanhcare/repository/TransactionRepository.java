@@ -1,7 +1,7 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.Transaction;
-import com.lanhcare.entity.TransactionStatus;
+import com.lanhcare.enums.TransactionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

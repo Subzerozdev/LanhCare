@@ -1,7 +1,7 @@
 package com.lanhcare.dto.admin.user;
 
-import com.lanhcare.entity.AccountRole;
-import com.lanhcare.entity.AccountStatus;
+import com.lanhcare.enums.AccountRole;
+import com.lanhcare.enums.AccountStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,7 +1,7 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.ICD11Code;
-import com.lanhcare.entity.ICD11Status;
+import com.lanhcare.enums.ICD11Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -95,10 +95,5 @@ public interface ICD11CodeRepository extends JpaRepository<ICD11Code, String> {
      * Count by chapter
      */
     long countByChapterChapterUri(String chapterUri);
-    
-    /**
-     * Find leaf codes only
-     */
-    Page<ICD11Code> findByIsLeafTrueOrderByIcdCodeAsc(Pageable pageable);
 }
 

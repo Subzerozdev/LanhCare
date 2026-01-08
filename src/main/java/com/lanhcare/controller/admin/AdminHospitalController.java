@@ -6,8 +6,8 @@ import com.lanhcare.dto.admin.hospital.AdminSpecialtyRequest;
 import com.lanhcare.dto.admin.hospital.AdminSpecialtyResponse;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.common.PageResponse;
-import com.lanhcare.entity.HospitalStatus;
-import com.lanhcare.entity.SpecialtyStatus;
+import com.lanhcare.enums.HospitalStatus;
+import com.lanhcare.enums.SpecialtyStatus;
 
 import java.util.List;
 import com.lanhcare.service.admin.AdminHospitalService;

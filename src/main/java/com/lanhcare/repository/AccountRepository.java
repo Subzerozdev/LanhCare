@@ -1,8 +1,8 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.Account;
-import com.lanhcare.entity.AccountRole;
-import com.lanhcare.entity.AccountStatus;
+import com.lanhcare.enums.AccountRole;
+import com.lanhcare.enums.AccountStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

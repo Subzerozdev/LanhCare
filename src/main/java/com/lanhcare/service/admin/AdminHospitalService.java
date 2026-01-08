@@ -6,6 +6,8 @@ import com.lanhcare.dto.admin.hospital.AdminSpecialtyRequest;
 import com.lanhcare.dto.admin.hospital.AdminSpecialtyResponse;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.*;
+import com.lanhcare.enums.HospitalStatus;
+import com.lanhcare.enums.SpecialtyStatus;
 import com.lanhcare.exception.ResourceNotFoundException;
 import com.lanhcare.repository.HospitalRepository;
 import com.lanhcare.repository.MedicalSpecialtyRepository;

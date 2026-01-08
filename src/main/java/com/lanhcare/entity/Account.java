@@ -1,5 +1,7 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.AccountRole;
+import com.lanhcare.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

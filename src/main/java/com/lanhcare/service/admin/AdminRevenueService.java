@@ -7,7 +7,7 @@ import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.Account;
 import com.lanhcare.entity.ServicePlan;
 import com.lanhcare.entity.Transaction;
-import com.lanhcare.entity.TransactionStatus;
+import com.lanhcare.enums.TransactionStatus;
 import com.lanhcare.repository.AccountRepository;
 import com.lanhcare.repository.ServicePlanRepository;
 import com.lanhcare.repository.TransactionRepository;

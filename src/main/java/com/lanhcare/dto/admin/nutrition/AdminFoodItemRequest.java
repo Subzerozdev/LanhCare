@@ -1,6 +1,6 @@
 package com.lanhcare.dto.admin.nutrition;
 
-import com.lanhcare.entity.FoodItemStatus;
+import com.lanhcare.enums.FoodItemStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

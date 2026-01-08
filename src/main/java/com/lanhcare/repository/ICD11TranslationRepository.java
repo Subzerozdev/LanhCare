@@ -1,7 +1,7 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.ICD11Translation;
-import com.lanhcare.entity.TranslationStatus;
+import com.lanhcare.enums.TranslationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

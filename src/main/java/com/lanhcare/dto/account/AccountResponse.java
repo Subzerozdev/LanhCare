@@ -1,7 +1,7 @@
 package com.lanhcare.dto.account;
 
-import com.lanhcare.entity.AccountRole;
-import com.lanhcare.entity.AccountStatus;
+import com.lanhcare.enums.AccountRole;
+import com.lanhcare.enums.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
