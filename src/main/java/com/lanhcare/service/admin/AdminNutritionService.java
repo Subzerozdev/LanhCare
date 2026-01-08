@@ -262,7 +262,9 @@ public class AdminNutritionService {
     
     @Transactional(readOnly = true)
     public List<Nutrient> getAllNutrients() {
-        return nutrientRepository.findAll();
+        return nutrientRepository.findAll().stream()
+                .filter(n -> !n.getIsDeleted())
+                .collect(Collectors.toList());
     }
     
     public Nutrient createNutrient(AdminNutrientRequest request) {
@@ -289,8 +291,16 @@ public class AdminNutritionService {
         return nutrientRepository.save(nutrient);
     }
     
+    /**
+     * Delete nutrient (soft delete)
+     */
     public void deleteNutrient(Integer id) {
-        nutrientRepository.deleteById(id);
+        Nutrient nutrient = nutrientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Nutrient not found with ID: " + id));
+        
+        // Soft delete - set isDeleted to true
+        nutrient.setIsDeleted(true);
+        nutrientRepository.save(nutrient);
     }
     
     // ========== Helper Methods ==========

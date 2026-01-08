@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.lanhcare.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,7 +31,16 @@ public class Post {
     private LocalDateTime createdAt;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20)
+    @Builder.Default
+    private PostStatus status = PostStatus.PENDING;
+    
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)

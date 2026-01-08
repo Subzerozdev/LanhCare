@@ -132,5 +132,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
            "ORDER BY revenue DESC")
     List<Object[]> getRevenueStatsByServicePlan(@Param("startDate") LocalDateTime startDate,
                                                 @Param("endDate") LocalDateTime endDate);
+    
+    /**
+     * Count transactions by service plan ID
+     */
+    long countByServicePlanId(Integer servicePlanId);
+    
+    /**
+     * Find transactions by service plan ID (for detail view)
+     */
+    List<Transaction> findByServicePlanIdOrderByTransactionDateDesc(Integer servicePlanId);
 }
 

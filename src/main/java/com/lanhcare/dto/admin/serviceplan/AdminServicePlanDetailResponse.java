@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 /**
- * Response DTO for Service Plan in Admin panel
+ * Detailed Response DTO for Service Plan in Admin panel
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminServicePlanResponse {
+public class AdminServicePlanDetailResponse {
     private Integer id;
     private String name;
     private String description;
@@ -25,4 +25,6 @@ public class AdminServicePlanResponse {
     private PeriodUnit periodUnit;
     private ServicePlanStatus status;
     private Long transactionCount;
+    private Long activeSubscriptions;
+    private BigDecimal totalRevenue;
 }
