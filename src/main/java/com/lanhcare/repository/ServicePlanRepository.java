@@ -59,3 +59,4 @@ public interface ServicePlanRepository extends JpaRepository<ServicePlan, Intege
     Page<ServicePlan> searchServicePlansByStatus(@Param("search") String search, 
                                                    @Param("status") ServicePlanStatus status, 
                                                    Pageable pageable);
+}
