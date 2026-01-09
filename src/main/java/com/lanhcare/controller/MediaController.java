@@ -25,6 +25,4 @@ public class MediaController {
         return cloudinaryService.uploadFile(file)
                 .thenApply(ResponseEntity::ok);
     }
-
-
 }

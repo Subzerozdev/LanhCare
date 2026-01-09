@@ -157,6 +157,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - no authentication required
                         .requestMatchers(
+                                "/api/**",
                                 "/api/auth/**",           // Authentication endpoints
                                 "/api/public/**",         // Public API endpoints
                                 "/test/**",               // Test API endpoints
