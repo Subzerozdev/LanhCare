@@ -2,7 +2,7 @@ package com.lanhcare.service.impls;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.lanhcare.exception.ImageException;
+import com.lanhcare.exception.exps.ImageException;
 import com.lanhcare.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

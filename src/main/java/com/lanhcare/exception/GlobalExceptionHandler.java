@@ -1,5 +1,6 @@
 package com.lanhcare.exception;
 
+import com.lanhcare.exception.exps.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -105,7 +106,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler({
             AuthenticationException.class,
-            com.lanhcare.exception.AuthenticationException.class
+            com.lanhcare.exception.exps.AuthenticationException.class
     })
     public ResponseEntity<ErrorResponse> handleAuthentication(
             Exception ex,
@@ -196,6 +197,51 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 "Bad Request Error",
                 "An unexpected error of health profile function occurred: " + ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(FoodItemException.class)
+    public ResponseEntity<ErrorResponse> handleFoodItemException(
+            FoodItemException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request Error",
+                "An unexpected error of food item function occurred: " + ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MealLogException.class)
+    public ResponseEntity<ErrorResponse> handleMealLogException(
+            MealLogException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request Error",
+                "An unexpected error of meal log function occurred: " + ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MealFoodException.class)
+    public ResponseEntity<ErrorResponse> handleMealFoodException(
+            MealFoodException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request Error",
+                "An unexpected error of meal food function occurred: " + ex.getMessage(),
                 request.getRequestURI()
         );
 

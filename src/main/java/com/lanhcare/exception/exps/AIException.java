@@ -1,4 +1,4 @@
-package com.lanhcare.exception;
+package com.lanhcare.exception.exps;
 
 public class AIException extends RuntimeException {
     public AIException(String message) {

@@ -6,7 +6,7 @@ import com.lanhcare.entity.Account;
 import com.lanhcare.entity.Comment;
 import com.lanhcare.entity.CommentMedia;
 import com.lanhcare.entity.Post;
-import com.lanhcare.exception.LanhCareException;
+import com.lanhcare.exception.exps.LanhCareException;
 import com.lanhcare.repository.AccountRepository;
 import com.lanhcare.repository.CommentRepository;
 import com.lanhcare.repository.PostRepository;

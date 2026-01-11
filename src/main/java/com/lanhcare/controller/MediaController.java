@@ -1,6 +1,7 @@
 package com.lanhcare.controller;
 
 import com.lanhcare.service.CloudinaryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +14,9 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("test/media")
+@RequestMapping("/api/medias")
 @RequiredArgsConstructor
+@Tag(name = "All - Media Upload", description = "APIs for uploading video or images to cloudinary")
 public class MediaController {
     private final CloudinaryService cloudinaryService;
 

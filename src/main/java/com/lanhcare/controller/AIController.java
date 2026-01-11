@@ -3,6 +3,7 @@ package com.lanhcare.controller;
 import com.lanhcare.dto.ai.AIRequest;
 import com.lanhcare.dto.ai.AIResponse;
 import com.lanhcare.service.AIService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,8 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping("/api/public/ai")
+@Tag(name = "User - AI Chatbot", description = "APIs for user AI Chatbot")
 public class AIController {
     private final AIService aiService;
 

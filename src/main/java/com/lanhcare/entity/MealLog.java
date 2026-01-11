@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "MealLog")
@@ -25,10 +27,6 @@ public class MealLog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "food_item_id", nullable = false)
-    private FoodItem foodItem;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "meal_type", length = 50)
@@ -49,4 +47,8 @@ public class MealLog {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "mealLog", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<MealFood> mealFoods = new ArrayList<>();
 }

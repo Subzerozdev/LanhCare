@@ -4,8 +4,8 @@ import com.lanhcare.dto.admin.nutrition.*;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.*;
 import com.lanhcare.enums.FoodItemStatus;
-import com.lanhcare.exception.ResourceAlreadyExistsException;
-import com.lanhcare.exception.ResourceNotFoundException;
+import com.lanhcare.exception.exps.ResourceAlreadyExistsException;
+import com.lanhcare.exception.exps.ResourceNotFoundException;
 import com.lanhcare.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -326,7 +326,7 @@ public class AdminNutritionService {
                 .map(this::mapToFoodNutrientResponse)
                 .collect(Collectors.toList());
         
-        long mealLogCount = mealLogRepository.countByFoodItemId(foodItem.getId());
+        long mealLogCount = mealLogRepository.countByMealFoods_FoodItemId(foodItem.getId());
         
         return AdminFoodItemDetailResponse.builder()
                 .id(foodItem.getId())

@@ -6,7 +6,7 @@ import com.lanhcare.entity.ServicePlan;
 import com.lanhcare.entity.Transaction;
 import com.lanhcare.enums.ServicePlanStatus;
 import com.lanhcare.enums.TransactionStatus;
-import com.lanhcare.exception.ResourceNotFoundException;
+import com.lanhcare.exception.exps.ResourceNotFoundException;
 import com.lanhcare.repository.ServicePlanRepository;
 import com.lanhcare.repository.TransactionRepository;
 import org.springframework.data.domain.Page;

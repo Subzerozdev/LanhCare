@@ -1,6 +1,6 @@
 package com.lanhcare.config;
 
-import com.lanhcare.exception.AIException;
+import com.lanhcare.exception.exps.AIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;

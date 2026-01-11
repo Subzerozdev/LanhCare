@@ -3,7 +3,7 @@ package com.lanhcare.service;
 import com.lanhcare.dto.account.AccountResponse;
 import com.lanhcare.dto.account.UpdateAccountRequest;
 import com.lanhcare.entity.Account;
-import com.lanhcare.exception.ResourceNotFoundException;
+import com.lanhcare.exception.exps.ResourceNotFoundException;
 import com.lanhcare.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
