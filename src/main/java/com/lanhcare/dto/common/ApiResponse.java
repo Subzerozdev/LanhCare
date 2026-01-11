@@ -61,4 +61,26 @@ public class ApiResponse<T> {
                 .data(null)
                 .build();
     }
+    
+    /**
+     * Error response (400)
+     */
+    public static <T> ApiResponse<T> error(String message) {
+        return ApiResponse.<T>builder()
+                .status(400)
+                .message(message)
+                .data(null)
+                .build();
+    }
+    
+    /**
+     * Error response with custom status
+     */
+    public static <T> ApiResponse<T> error(int status, String message) {
+        return ApiResponse.<T>builder()
+                .status(status)
+                .message(message)
+                .data(null)
+                .build();
+    }
 }
