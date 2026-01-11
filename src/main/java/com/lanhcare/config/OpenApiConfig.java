@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,10 +25,31 @@ public class OpenApiConfig {
     @Value("${app.api.version:1.0.0}")
     private String apiVersion;
     
+    @Value("${render.external.url:}")
+    private String renderExternalUrl;
+    
     @Bean
     public OpenAPI customOpenAPI() {
         // Security scheme for JWT
         final String securitySchemeName = "bearerAuth";
+        
+        // Build server list dynamically
+        List<Server> servers = new ArrayList<>();
+        
+        // Add Render URL if available (from environment variable)
+        if (renderExternalUrl != null && !renderExternalUrl.isEmpty()) {
+            servers.add(new Server()
+                    .url(renderExternalUrl)
+                    .description("Render Deployment Server"));
+        }
+        
+        // Add default servers
+        servers.add(new Server()
+                .url("/")
+                .description("Current Server (Auto-detected)"));
+        servers.add(new Server()
+                .url("http://localhost:8080")
+                .description("Local Development Server"));
         
         return new OpenAPI()
                 .info(new Info()
@@ -46,14 +68,7 @@ public class OpenApiConfig {
                         .license(new License()
                                 .name("LanhCare © 2024")
                                 .url("https://lanhcare.com/license")))
-                .servers(List.of(
-                        new Server()
-                                .url("http://localhost:8080")
-                                .description("Local Development Server"),
-                        new Server()
-                                .url("https://api.lanhcare.com")
-                                .description("Production Server")
-                ))
+                .servers(servers)
                 // Add JWT security scheme
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
