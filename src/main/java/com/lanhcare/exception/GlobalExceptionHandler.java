@@ -173,7 +173,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AIException.class)
-    public ResponseEntity<ErrorResponse> handleImageException(
+    public ResponseEntity<ErrorResponse> handleAIException(
             AIException ex,
             HttpServletRequest request) {
 
@@ -185,5 +185,20 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(HealthProfileException.class)
+    public ResponseEntity<ErrorResponse> handleHealthProfileException(
+            HealthProfileException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request Error",
+                "An unexpected error of health profile function occurred: " + ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }
