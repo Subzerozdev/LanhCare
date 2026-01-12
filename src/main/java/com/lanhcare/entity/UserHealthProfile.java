@@ -1,6 +1,7 @@
 package com.lanhcare.entity;
 
 import com.lanhcare.enums.ActivityLevel;
+import com.lanhcare.enums.BMIStatus;
 import com.lanhcare.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,6 +49,10 @@ public class UserHealthProfile {
     
     @Column(name = "bmi_value", precision = 5, scale = 2)
     private BigDecimal bmiValue;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "bmi_status")
+    private BMIStatus bmiStatus;
     
     @Column(name = "health_goals", columnDefinition = "TEXT")
     private String healthGoals;

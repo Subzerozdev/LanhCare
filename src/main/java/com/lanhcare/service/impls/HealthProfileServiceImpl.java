@@ -4,6 +4,7 @@ import com.lanhcare.dto.healthprofile.HealthProfileRequest;
 import com.lanhcare.dto.healthprofile.HealthProfileResponse;
 import com.lanhcare.entity.Account;
 import com.lanhcare.entity.UserHealthProfile;
+import com.lanhcare.enums.BMIStatus;
 import com.lanhcare.exception.exps.AuthenticationException;
 import com.lanhcare.exception.exps.HealthProfileException;
 import com.lanhcare.repository.AccountRepository;
@@ -13,6 +14,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 @Service
@@ -27,6 +30,9 @@ public class HealthProfileServiceImpl implements HealthProfileService {
         Account account = accountRepository.findById(request.getAccountId())
                 .orElseThrow(() -> new AuthenticationException("Account not found with ID: " + request.getAccountId()));
 
+        BigDecimal bmiValue = calculateBMI(request.getWeightKg(), request.getHeightCm());
+        BMIStatus status = getStatusByBMI(bmiValue);
+
         UserHealthProfile profile = UserHealthProfile.builder()
                 .account(account)
                 .dateOfBirth(request.getDateOfBirth())
@@ -34,11 +40,48 @@ public class HealthProfileServiceImpl implements HealthProfileService {
                 .heightCm(request.getHeightCm())
                 .weightKg(request.getWeightKg())
                 .activityLevel(request.getActivityLevel())
-                .bmiValue(request.getBmiValue())
+                .bmiValue(bmiValue)
+                .bmiStatus(status)
                 .healthGoals(request.getHealthGoals())
                 .build();
 
         return healthProfileRepository.save(profile);
+    }
+
+    private BigDecimal calculateBMI(BigDecimal weightKg, BigDecimal heightCm) {
+        if (weightKg.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new HealthProfileException("Weight Kg should be greater than 0");
+        }
+        if (heightCm.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new HealthProfileException("Height Cm should be greater than 0");
+        }
+
+        return weightKg.divide(heightCm.multiply(heightCm), 2, RoundingMode.HALF_UP);
+    }
+
+    private BMIStatus getStatusByBMI(BigDecimal bmiValue) {
+        // Out of BMI Status Range
+        if (bmiValue.compareTo(BigDecimal.valueOf(204.0)) >= 0) {
+            return BMIStatus.OBESE_II;
+        }
+
+        // Loop for checking Status
+        for (BMIStatus status : BMIStatus.values()) {
+            if (isInBMIStatus(bmiValue, status)) {
+                return status;
+            }
+        }
+
+        return BMIStatus.UNDEFINED;
+    }
+
+    private boolean isInBMIStatus(BigDecimal bmiValue, BMIStatus status) {
+        if(status.equals(BMIStatus.UNDEFINED)) {
+            return false;
+        }
+
+        return bmiValue.compareTo(status.getMinBmi()) >= 0
+                && bmiValue.compareTo(status.getMaxBmi()) <= 0;
     }
 
     @Override
@@ -52,8 +95,13 @@ public class HealthProfileServiceImpl implements HealthProfileService {
         Optional.ofNullable(request.getHeightCm()).ifPresent(existingProfile::setHeightCm);
         Optional.ofNullable(request.getWeightKg()).ifPresent(existingProfile::setWeightKg);
         Optional.ofNullable(request.getActivityLevel()).ifPresent(existingProfile::setActivityLevel);
-        Optional.ofNullable(request.getBmiValue()).ifPresent(existingProfile::setBmiValue);
         Optional.ofNullable(request.getHealthGoals()).ifPresent(existingProfile::setHealthGoals);
+
+        BigDecimal bmiValue = calculateBMI(existingProfile.getWeightKg(), existingProfile.getHeightCm());
+        BMIStatus status = getStatusByBMI(bmiValue);
+        existingProfile.setBmiValue(bmiValue);
+        existingProfile.setBmiStatus(status);
+
 
         return healthProfileRepository.save(existingProfile);
     }
@@ -89,6 +137,8 @@ public class HealthProfileServiceImpl implements HealthProfileService {
                 .weightKg(healthProfile.getWeightKg())
                 .activityLevel(healthProfile.getActivityLevel())
                 .bmiValue(healthProfile.getBmiValue())
+                .bmiStatus(healthProfile.getBmiStatus().getName())
+                .bmiStatusDescription(healthProfile.getBmiStatus().getDescription())
                 .healthGoals(healthProfile.getHealthGoals())
                 .createdAt(healthProfile.getCreatedAt())
                 .updatedAt(healthProfile.getUpdatedAt())

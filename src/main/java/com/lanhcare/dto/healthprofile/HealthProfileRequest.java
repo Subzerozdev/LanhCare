@@ -21,6 +21,5 @@ public class HealthProfileRequest {
     private BigDecimal heightCm;
     private BigDecimal weightKg;
     private ActivityLevel activityLevel;
-    private BigDecimal bmiValue;
     private String healthGoals;
 }
