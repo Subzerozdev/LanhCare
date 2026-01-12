@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/medias")
+@RequestMapping("/api/media")
 @RequiredArgsConstructor
 @Tag(name = "All - Media Upload", description = "APIs for uploading video or images to cloudinary")
 public class MediaController {

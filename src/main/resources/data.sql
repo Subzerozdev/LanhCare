@@ -1,3 +1,5 @@
+USE defaultdb;
+
 -- LanhCare Sample Data (Vietnamese)
 -- This file is automatically executed by Spring Boot on startup
 -- Only runs if tables are empty (spring.sql.init.mode=always)

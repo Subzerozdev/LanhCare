@@ -29,7 +29,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Security Configuration
@@ -115,20 +114,51 @@ public class SecurityConfig {
     }
 
     /**
-     * CORS Configuration for Next.js frontend
+     * CORS Configuration for frontend and Swagger UI
+     * Supports local development, Render deployment, and production environments
      */
     @Bean
     @Order(2)
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        
+        // Allow specific origins for development and production
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",  // Next.js dev server
                 "http://localhost:3001",
                 "https://your-production-domain.com",  // Replace with your production domain
-                "http://10.0.2.2:8080"
+                "http://10.0.2.2:8080",
+                "http://localhost:3000",      // Next.js dev server
+                "http://localhost:3001",      // Alternative dev port
+                "http://localhost:8080",      // Local Spring Boot
+                "http://127.0.0.1:3000",
+                "http://127.0.0.1:8080",
+                "https://lanhcare.onrender.com"  // Render deployment
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        
+        // Allow Render.com and other production domains using patterns
+        // This allows Swagger UI on Render to work properly
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://*.onrender.com",     // All Render.com subdomains
+                "https://*.vercel.app",       // Vercel deployments
+                "https://*.netlify.app",      // Netlify deployments
+                "https://your-production-domain.com"  // Replace with your actual domain
+        ));
+        
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"
+        ));
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Disposition"
+        ));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         

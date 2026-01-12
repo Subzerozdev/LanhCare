@@ -76,6 +76,24 @@ public class GlobalExceptionHandler {
     }
     
     /**
+     * Handle bad request exceptions (400)
+     */
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(
+            BadRequestException ex,
+            HttpServletRequest request) {
+        
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    
+    /**
      * Handle Spring Validation errors (400)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
