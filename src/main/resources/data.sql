@@ -125,11 +125,11 @@ VALUES (1, 5, 'Cơm trắng', 'Cơm trắng nấu chín', 130.00, 'g', 100.00, '
 
 -- 11. User Health Profiles (2 profiles)
 INSERT INTO user_health_profile (id, account_id, date_of_birth, gender, height_cm, weight_kg, activity_level, bmi_value,
-                                 bmi_status, health_goals, created_at, updated_at)
-VALUES (1, 2, '1990-05-15', 'MALE', 175.00, 70.00, 'NO_EXERCISE', 22.86, 'NORMAL', 'Duy trì cân nặng và tăng cường sức khỏe',
-        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-       (2, 3, '1995-08-20', 'FEMALE', 160.00, 55.00, 'NO_EXERCISE', 21.48, 'NORMAL', 'Giảm 3kg trong 3 tháng', CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP) ON CONFLICT (id) DO NOTHING;
+                                 bmi_status, health_goals, created_at, updated_at, tdde_value)
+VALUES (1, 2, '1990-05-15', 'MALE', 175.00, 70.00, 'NO_EXERCISE', 22.86, 'NORMAL', 'LOSE_WEIGHT',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1.0),
+       (2, 3, '1995-08-20', 'FEMALE', 160.00, 55.00, 'NO_EXERCISE', 21.48, 'NORMAL', 'MAINTAIN', CURRENT_TIMESTAMP,
+        , 1.0) ON CONFLICT (id) DO NOTHING;
 
 -- 12. Transactions (2 transactions)
 INSERT INTO transaction (id, account_id, service_plan_id, transaction_date, amount, payment_method, status)
