@@ -124,7 +124,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",  // Next.js dev server
                 "http://localhost:3001",
-                "https://your-production-domain.com"  // Replace with your production domain
+                "https://your-production-domain.com",  // Replace with your production domain
+                "http://10.0.2.2:8080"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
