@@ -1,4 +1,4 @@
-package com.lanhcare.exception;
+package com.lanhcare.exception.exps;
 
 /**
  * Exception thrown when a business validation fails

@@ -1,4 +1,4 @@
-package com.lanhcare.exception;
+package com.lanhcare.exception.exps;
 
 /**
  * Exception thrown when a resource already exists (e.g., duplicate email)

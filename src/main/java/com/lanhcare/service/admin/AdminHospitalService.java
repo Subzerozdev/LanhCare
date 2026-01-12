@@ -8,7 +8,7 @@ import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.*;
 import com.lanhcare.enums.HospitalStatus;
 import com.lanhcare.enums.SpecialtyStatus;
-import com.lanhcare.exception.ResourceNotFoundException;
+import com.lanhcare.exception.exps.ResourceNotFoundException;
 import com.lanhcare.repository.HospitalRepository;
 import com.lanhcare.repository.MedicalSpecialtyRepository;
 import org.springframework.data.domain.Page;

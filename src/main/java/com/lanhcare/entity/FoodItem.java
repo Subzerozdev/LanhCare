@@ -53,8 +53,8 @@ public class FoodItem {
     @OneToMany(mappedBy = "foodItem", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<FoodNutrient> foodNutrients = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "foodItem", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "foodItem", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<MealLog> mealLogs = new ArrayList<>();
+    private List<MealFood> mealFoods = new ArrayList<>();
 }

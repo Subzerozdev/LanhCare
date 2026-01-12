@@ -1,5 +1,6 @@
 package com.lanhcare.security;
 
+import com.lanhcare.exception.exps.AuthenticationException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -118,13 +119,13 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token);
             return true;
         } catch (MalformedJwtException ex) {
-            throw new com.lanhcare.exception.AuthenticationException("Invalid JWT token");
+            throw new AuthenticationException("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            throw new com.lanhcare.exception.AuthenticationException("Expired JWT token");
+            throw new AuthenticationException("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            throw new com.lanhcare.exception.AuthenticationException("Unsupported JWT token");
+            throw new AuthenticationException("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            throw new com.lanhcare.exception.AuthenticationException("JWT claims string is empty");
+            throw new AuthenticationException("JWT claims string is empty");
         }
     }
     

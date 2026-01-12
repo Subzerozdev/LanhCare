@@ -8,10 +8,13 @@ import com.lanhcare.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -92,5 +95,19 @@ public class AuthController {
     )
     public ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("Authentication service is running");
+    }
+
+    @SecurityRequirement(name = "BearerAuth")
+    @PostMapping("/google/android-callback")
+    public ResponseEntity<String> callbackAndroid(
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        // Token is authenticated by Spring Security
+        // Extract to get info
+        String email = jwt.getClaimAsString("email");
+        String name = jwt.getClaimAsString("name");
+
+        String response = authService.loginGoogleForMobile(email, name);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

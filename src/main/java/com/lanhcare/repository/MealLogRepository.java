@@ -1,6 +1,9 @@
 package com.lanhcare.repository;
 
 import com.lanhcare.entity.MealLog;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,5 +43,7 @@ public interface MealLogRepository extends JpaRepository<MealLog, Integer> {
     /**
      * Count meal logs by food item
      */
-    long countByFoodItemId(Integer foodItemId);
+    long countByMealFoods_FoodItemId(Integer foodItemId);
+
+    Page<MealLog> findAll(Specification<MealLog> spec, Pageable pageable);
 }

@@ -4,7 +4,7 @@ import com.lanhcare.dto.admin.comment.*;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.entity.Comment;
 import com.lanhcare.enums.CommentStatus;
-import com.lanhcare.exception.ResourceNotFoundException;
+import com.lanhcare.exception.exps.ResourceNotFoundException;
 import com.lanhcare.repository.CommentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

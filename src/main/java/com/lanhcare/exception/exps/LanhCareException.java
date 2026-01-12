@@ -1,4 +1,4 @@
-package com.lanhcare.exception;
+package com.lanhcare.exception.exps;
 
 /**
  * Base exception class for all custom exceptions in LanhCare application

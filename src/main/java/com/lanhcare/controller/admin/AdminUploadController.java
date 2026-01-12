@@ -3,6 +3,7 @@ package com.lanhcare.controller.admin;
 import com.lanhcare.dto.admin.upload.UploadResponse;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.service.CloudinaryService;
+import com.lanhcare.service.admin.AdminCloudinaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,9 +27,9 @@ import java.util.List;
 @Tag(name = "Admin - File Upload", description = "Admin APIs for uploading images and videos")
 public class AdminUploadController {
     
-    private final CloudinaryService cloudinaryService;
+    private final AdminCloudinaryService cloudinaryService;
     
-    public AdminUploadController(CloudinaryService cloudinaryService) {
+    public AdminUploadController(AdminCloudinaryService cloudinaryService) {
         this.cloudinaryService = cloudinaryService;
     }
     

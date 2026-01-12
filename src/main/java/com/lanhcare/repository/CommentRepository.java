@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Repository for Comment entity
  */
@@ -97,7 +99,13 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     Page<Comment> searchCommentsByUser(@Param("search") String search, 
                                         @Param("userId") Integer userId, 
                                         Pageable pageable);
-    
+
+    // Lấy các comment gốc của một bài post
+    List<Comment> findByPostIdAndParentCommentIsNullAndIsDeletedFalseOrderByCreatedAtDesc(Integer postId);
+
+    // Lấy các comment con dựa trên ID của comment cha
+    List<Comment> findByParentCommentIdAndIsDeletedFalseOrderByCreatedAtAsc(Integer parentId);
+
     // ========== Statistics Queries ==========
     
     /**
