@@ -34,9 +34,12 @@ public class HealthProfileServiceImpl implements HealthProfileService {
                 .heightCm(request.getHeightCm())
                 .weightKg(request.getWeightKg())
                 .activityLevel(request.getActivityLevel())
-                .bmiValue(request.getBmiValue())
-                .healthGoals(request.getHealthGoals())
+                .healthGoals(request.getHealthGoal())
                 .build();
+
+        profile.setBmiValue(profile.calculateBMI());
+        profile.setBmiStatus(profile.getStatusByBMI());
+        profile.setTddeValue(profile.calculateTDDE());
 
         return healthProfileRepository.save(profile);
     }
@@ -52,8 +55,11 @@ public class HealthProfileServiceImpl implements HealthProfileService {
         Optional.ofNullable(request.getHeightCm()).ifPresent(existingProfile::setHeightCm);
         Optional.ofNullable(request.getWeightKg()).ifPresent(existingProfile::setWeightKg);
         Optional.ofNullable(request.getActivityLevel()).ifPresent(existingProfile::setActivityLevel);
-        Optional.ofNullable(request.getBmiValue()).ifPresent(existingProfile::setBmiValue);
-        Optional.ofNullable(request.getHealthGoals()).ifPresent(existingProfile::setHealthGoals);
+        Optional.ofNullable(request.getHealthGoal()).ifPresent(existingProfile::setHealthGoals);
+
+        existingProfile.setBmiValue(existingProfile.calculateBMI());
+        existingProfile.setBmiStatus(existingProfile.getStatusByBMI());
+        existingProfile.setTddeValue(existingProfile.calculateTDDE());
 
         return healthProfileRepository.save(existingProfile);
     }
@@ -87,9 +93,14 @@ public class HealthProfileServiceImpl implements HealthProfileService {
                 .gender(healthProfile.getGender())
                 .heightCm(healthProfile.getHeightCm())
                 .weightKg(healthProfile.getWeightKg())
-                .activityLevel(healthProfile.getActivityLevel())
                 .bmiValue(healthProfile.getBmiValue())
-                .healthGoals(healthProfile.getHealthGoals())
+                .bmiStatus(healthProfile.getBmiStatus().getName())
+                .bmiStatusDescription(healthProfile.getBmiStatus().getDescription())
+                .tddeValue(healthProfile.getTddeValue())
+                .activityLevel(healthProfile.getActivityLevel().getDisplayName())
+                .activityLevelDescription(healthProfile.getActivityLevel().getDescription())
+                .healthGoal(healthProfile.getHealthGoals().getDisplayName())
+                .healthGoalDescription(healthProfile.getHealthGoals().getDescription())
                 .createdAt(healthProfile.getCreatedAt())
                 .updatedAt(healthProfile.getUpdatedAt())
                 .build();

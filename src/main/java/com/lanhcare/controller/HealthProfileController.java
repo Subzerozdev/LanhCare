@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/health-profiles")
+@RequestMapping("/api/public/health-profiles")
 @RequiredArgsConstructor
 @Tag(name = "User - Health Profile", description = "APIs for managing user health profiles")
 public class HealthProfileController {

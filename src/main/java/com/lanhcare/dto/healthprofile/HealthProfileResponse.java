@@ -1,7 +1,7 @@
 package com.lanhcare.dto.healthprofile;
 
-import com.lanhcare.enums.ActivityLevel;
 import com.lanhcare.enums.Gender;
+import com.lanhcare.enums.HealthGoal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,9 +21,14 @@ public class HealthProfileResponse {
     private Gender gender;
     private BigDecimal heightCm;
     private BigDecimal weightKg;
-    private ActivityLevel activityLevel;
     private BigDecimal bmiValue;
-    private String healthGoals;
+    private BigDecimal tddeValue;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String bmiStatus;
+    private String bmiStatusDescription;
+    private String activityLevel;
+    private String activityLevelDescription;
+    private String healthGoal;
+    private String healthGoalDescription;
 }
