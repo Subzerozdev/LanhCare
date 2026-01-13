@@ -128,8 +128,8 @@ INSERT INTO user_health_profile (id, account_id, date_of_birth, gender, height_c
                                  bmi_status, health_goals, created_at, updated_at, tdde_value)
 VALUES (1, 2, '1990-05-15', 'MALE', 175.00, 70.00, 'NO_EXERCISE', 22.86, 'NORMAL', 'LOSE_WEIGHT',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1.0),
-       (2, 3, '1995-08-20', 'FEMALE', 160.00, 55.00, 'NO_EXERCISE', 21.48, 'NORMAL', 'MAINTAIN', CURRENT_TIMESTAMP,
-        , 1.0) ON CONFLICT (id) DO NOTHING;
+       (2, 3, '1995-08-20', 'FEMALE', 160.00, 55.00, 'NO_EXERCISE', 21.48, 'NORMAL', 'MAINTAIN', CURRENT_TIMESTAMP
+        , CURRENT_TIMESTAMP,1.0) ON CONFLICT (id) DO NOTHING;
 
 -- 12. Transactions (2 transactions)
 INSERT INTO transaction (id, account_id, service_plan_id, transaction_date, amount, payment_method, status)

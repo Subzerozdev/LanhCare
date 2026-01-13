@@ -96,6 +96,7 @@ public class HealthProfileServiceImpl implements HealthProfileService {
                 .bmiValue(healthProfile.getBmiValue())
                 .bmiStatus(healthProfile.getBmiStatus().getName())
                 .bmiStatusDescription(healthProfile.getBmiStatus().getDescription())
+                .tddeValue(healthProfile.getTddeValue())
                 .activityLevel(healthProfile.getActivityLevel().getDisplayName())
                 .activityLevelDescription(healthProfile.getActivityLevel().getDescription())
                 .healthGoal(healthProfile.getHealthGoals().getDisplayName())

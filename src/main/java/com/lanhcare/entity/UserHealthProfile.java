@@ -25,7 +25,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class UserHealthProfile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -58,7 +57,7 @@ public class UserHealthProfile {
     @Column(name = "bmi_status")
     private BMIStatus bmiStatus;
 
-    @Column(name = "tdde_value", precision = 5, scale = 2)
+    @Column(name = "tdde_value", scale = 2)
     private BigDecimal tddeValue;
 
     @Enumerated(EnumType.STRING)
@@ -86,7 +85,8 @@ public class UserHealthProfile {
             throw new HealthProfileException("Height Cm should be greater than 0");
         }
 
-        return weightKg.divide(heightCm.multiply(heightCm), 2, RoundingMode.HALF_UP);
+        BigDecimal heightM = heightCm.divide(BigDecimal.valueOf(100));
+        return weightKg.divide(heightM.multiply(heightM), 2, RoundingMode.HALF_UP);
     }
 
     public BMIStatus getStatusByBMI() {
