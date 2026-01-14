@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/public/health-profiles")
+@RequestMapping("/api/health-profiles")
 @RequiredArgsConstructor
 @Tag(name = "User - Health Profile", description = "APIs for managing user health profiles")
 public class HealthProfileController {
@@ -54,7 +54,9 @@ public class HealthProfileController {
 
     @GetMapping("/account/{accountId}")
     @Operation(summary = "Get profile by Account ID", description = "Retrieve health profile details for a specific account")
-    public ResponseEntity<ApiResponse<HealthProfileResponse>> getByAccountId(@PathVariable int accountId) {
+    public ResponseEntity<ApiResponse<HealthProfileResponse>> getByAccountId(
+            @PathVariable int accountId
+    ) {
         UserHealthProfile profile = healthProfileService.getByAccountId(accountId);
         HealthProfileResponse response = healthProfileService.mapToResponse(profile);
         return ResponseEntity.ok(ApiResponse.success("Health profile retrieved successfully", response));
@@ -74,7 +76,9 @@ public class HealthProfileController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get profile by ID", description = "Retrieve health profile details by its primary ID")
-    public ResponseEntity<ApiResponse<HealthProfileResponse>> getById(@PathVariable int id) {
+    public ResponseEntity<ApiResponse<HealthProfileResponse>> getById(
+            @PathVariable int id
+    ) {
         UserHealthProfile profile = healthProfileService.getById(id);
         HealthProfileResponse response = healthProfileService.mapToResponse(profile);
         return ResponseEntity.ok(ApiResponse.success("Health profile retrieved successfully", response));
@@ -82,7 +86,9 @@ public class HealthProfileController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete health profile", description = "Remove a health profile by its ID")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable int id) {
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @PathVariable int id
+    ) {
         healthProfileService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Health profile deleted successfully", null));
     }

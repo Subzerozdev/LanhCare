@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/public/ai")
+@RequestMapping("/api/ai")
 @Tag(name = "User - AI Chatbot", description = "APIs for user AI Chatbot")
 public class AIController {
     private final AIService aiService;

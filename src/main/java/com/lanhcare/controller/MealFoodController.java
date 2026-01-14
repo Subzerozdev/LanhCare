@@ -45,9 +45,21 @@ public class MealFoodController {
         return ResponseEntity.ok(ApiResponse.success("Danh sách món ăn trong bữa", response));
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Get meal food by Id", description = "Retrieve meal food item by Id")
+    public ResponseEntity<ApiResponse<MealFoodResponse>> getById(
+            @PathVariable Integer id
+    ) {
+        MealFoodResponse response = mealFoodService.mapToResponse(
+                mealFoodService.findById(id));
+        return ResponseEntity.ok(ApiResponse.success("Món ăn trong bữa", response));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Remove food from meal", description = "Delete a specific food record from a meal log")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable int id) {
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @PathVariable int id
+    ) {
         mealFoodService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Đã xóa món ăn khỏi bữa", null));
     }

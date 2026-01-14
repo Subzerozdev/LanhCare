@@ -15,7 +15,7 @@ import java.util.List;
 public class PostResponse {
     private Integer id;
     private String content;
-    private int heart;
+    private Integer heart;
     private LocalDateTime createdAt;
     private List<String> mediaUrls;
     private Integer accountId;

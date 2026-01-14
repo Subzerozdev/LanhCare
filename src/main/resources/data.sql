@@ -21,7 +21,7 @@ ALTER SEQUENCE IF EXISTS fcmtoken_id_seq RESTART WITH 1;
 ALTER SEQUENCE IF EXISTS meal_log_id_seq RESTART WITH 1;
 
 -- 1. Accounts (5 users)
-INSERT INTO account (id, email, fullname, password, role, status)
+INSERT INTO account (id, email, full_name, password, role, status)
 VALUES (1, 'admin@lanhcare.com', 'Quản trị viên', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         'ADMIN', 'ACTIVE'),
        (2, 'user1@lanhcare.com', 'Nguyễn Văn An', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',

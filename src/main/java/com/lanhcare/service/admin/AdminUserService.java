@@ -233,7 +233,7 @@ public class AdminUserService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         
         // Get meal log count
-        Integer mealLogCount = mealLogRepository.findByAccountIdOrderByMealDateDescLoggedTimeDesc(account.getId()).size();
+        Integer mealLogCount = mealLogRepository.findByDailyLog_Account_IdOrderByDailyLog_LoggedDateDescLoggedTimeDesc(account.getId()).size();
         
         return AdminUserDetailResponse.builder()
                 .id(account.getId())

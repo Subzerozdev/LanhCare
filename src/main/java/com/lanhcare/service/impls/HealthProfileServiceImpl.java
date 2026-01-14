@@ -39,7 +39,7 @@ public class HealthProfileServiceImpl implements HealthProfileService {
 
         profile.setBmiValue(profile.calculateBMI());
         profile.setBmiStatus(profile.getStatusByBMI());
-        profile.setTddeValue(profile.calculateTDDE());
+        profile.setTdeeValue(profile.calculateTDDE());
 
         return healthProfileRepository.save(profile);
     }
@@ -59,7 +59,7 @@ public class HealthProfileServiceImpl implements HealthProfileService {
 
         existingProfile.setBmiValue(existingProfile.calculateBMI());
         existingProfile.setBmiStatus(existingProfile.getStatusByBMI());
-        existingProfile.setTddeValue(existingProfile.calculateTDDE());
+        existingProfile.setTdeeValue(existingProfile.calculateTDDE());
 
         return healthProfileRepository.save(existingProfile);
     }
@@ -96,7 +96,7 @@ public class HealthProfileServiceImpl implements HealthProfileService {
                 .bmiValue(healthProfile.getBmiValue())
                 .bmiStatus(healthProfile.getBmiStatus().getName())
                 .bmiStatusDescription(healthProfile.getBmiStatus().getDescription())
-                .tddeValue(healthProfile.getTddeValue())
+                .tdeeValue(healthProfile.getTdeeValue())
                 .activityLevel(healthProfile.getActivityLevel().getDisplayName())
                 .activityLevelDescription(healthProfile.getActivityLevel().getDescription())
                 .healthGoal(healthProfile.getHealthGoals().getDisplayName())

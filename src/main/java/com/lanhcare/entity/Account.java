@@ -52,5 +52,5 @@ public class Account {
     
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<MealLog> mealLogs = new ArrayList<>();
+    private List<DailyLog> dailyLogs = new ArrayList<>();
 }
