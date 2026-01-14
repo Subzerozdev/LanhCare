@@ -1,4 +1,4 @@
-package com.lanhcare.enums;
+package com.lanhcare.enums.healthprofile;
 
 public enum Gender {
     MALE,

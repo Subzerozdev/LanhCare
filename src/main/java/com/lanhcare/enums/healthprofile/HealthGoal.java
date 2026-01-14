@@ -1,4 +1,4 @@
-package com.lanhcare.enums;
+package com.lanhcare.enums.healthprofile;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

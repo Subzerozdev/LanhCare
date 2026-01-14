@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "MealFood")
+@Table(name = "meal_food")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,4 +30,8 @@ public class MealFood {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meal_log_id", nullable = false)
     private MealLog mealLog;
+
+    public void calculateCalories() {
+        calories = foodItem.getCalo().multiply(BigDecimal.valueOf(quantity));
+    }
 }

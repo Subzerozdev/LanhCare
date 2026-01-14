@@ -1,9 +1,9 @@
 package com.lanhcare.entity;
 
-import com.lanhcare.enums.ActivityLevel;
-import com.lanhcare.enums.BMIStatus;
-import com.lanhcare.enums.Gender;
-import com.lanhcare.enums.HealthGoal;
+import com.lanhcare.enums.healthprofile.ActivityLevel;
+import com.lanhcare.enums.healthprofile.BMIStatus;
+import com.lanhcare.enums.healthprofile.Gender;
+import com.lanhcare.enums.healthprofile.HealthGoal;
 import com.lanhcare.exception.exps.HealthProfileException;
 import jakarta.persistence.*;
 import lombok.*;
@@ -57,8 +57,8 @@ public class UserHealthProfile {
     @Column(name = "bmi_status")
     private BMIStatus bmiStatus;
 
-    @Column(name = "tdde_value", scale = 2)
-    private BigDecimal tddeValue;
+    @Column(name = "tdee_value", scale = 2)
+    private BigDecimal tdeeValue;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "health_goals")

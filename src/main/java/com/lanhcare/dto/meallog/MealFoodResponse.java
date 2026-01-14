@@ -16,8 +16,9 @@ import java.math.BigDecimal;
 @Builder
 public class MealFoodResponse {
     private Integer id;
-    private int quantity;
+    private Integer quantity;
     private BigDecimal calories;
-    private int foodItemId;
-    private int mealLogId;
+    private Integer foodItemId;
+    private String foodItemName;
+    private Integer mealLogId;
 }

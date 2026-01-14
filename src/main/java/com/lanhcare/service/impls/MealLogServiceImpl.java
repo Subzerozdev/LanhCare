@@ -2,11 +2,11 @@ package com.lanhcare.service.impls;
 
 import com.lanhcare.dto.meallog.MealLogRequest;
 import com.lanhcare.dto.meallog.MealLogResponse;
-import com.lanhcare.entity.Account;
+import com.lanhcare.entity.DailyLog;
 import com.lanhcare.entity.MealLog;
-import com.lanhcare.exception.exps.AuthenticationException;
+import com.lanhcare.exception.exps.DailyLogException;
 import com.lanhcare.exception.exps.MealLogException;
-import com.lanhcare.repository.AccountRepository;
+import com.lanhcare.repository.DailyLogRepository;
 import com.lanhcare.repository.MealLogRepository;
 import com.lanhcare.service.MealLogService;
 import com.lanhcare.specification.MealLogSpec;
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,34 +27,44 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MealLogServiceImpl implements MealLogService {
     private final MealLogRepository mealLogRepository;
-    private final AccountRepository accountRepository;
+    private final DailyLogRepository dailyLogRepository;
 
     @Override
     @Transactional
     public MealLog create(MealLogRequest request) {
-        Account account = accountRepository.findById(request.getAccountId())
-                .orElseThrow(() -> new AuthenticationException("Account not found"));
+        DailyLog dailyLog = dailyLogRepository.findById(request.getDailyLogId())
+                .orElseThrow(() -> new DailyLogException("Daily Log not found"));
 
         MealLog mealLog = MealLog.builder()
-                .account(account)
+                .dailyLog(dailyLog)
                 .mealType(request.getMealType())
-                .mealDate(request.getMealDate())
-                .loggedTime(LocalTime.now())
-                .totalCalories(BigDecimal.ZERO)
+                .loggedTime(request.getLoggedTime())
                 .notes(request.getNotes())
+                .totalCalories(BigDecimal.ZERO)
                 .build();
 
         return mealLogRepository.save(mealLog);
     }
 
     @Override
-    public MealLog update(MealLogRequest request) {
-        MealLog mealLog = getById(request.getMealLogId());
+    @Transactional
+    public MealLog update(Integer id, MealLogRequest request) {
+        MealLog mealLog = getById(id);
 
         Optional.ofNullable(request.getMealType()).ifPresent(mealLog::setMealType);
+        Optional.ofNullable(request.getLoggedTime()).ifPresent(mealLog::setLoggedTime);
         Optional.ofNullable(request.getNotes()).ifPresent(mealLog::setNotes);
 
-        return mealLogRepository.save(mealLog);
+        mealLog.calculateTotalCalories();
+
+        MealLog saved = mealLogRepository.save(mealLog);
+
+        DailyLog dailyLog = saved.getDailyLog();
+        dailyLog.calculateCaloriesIn();
+        dailyLog.calculateCaloriesOut();
+        dailyLogRepository.save(dailyLog);
+
+        return saved;
     }
 
     @Override
@@ -64,8 +74,17 @@ public class MealLogServiceImpl implements MealLogService {
     }
 
     @Override
-    public void delete(int mealLogId) {
-        mealLogRepository.deleteById(mealLogId);
+    @Transactional
+    public void delete(Integer id) {
+        MealLog mealLog = getById(id);
+
+        DailyLog dailyLog = mealLog.getDailyLog();
+        dailyLog.getMealLogs().remove(mealLog);
+        mealLogRepository.delete(mealLog);
+
+        dailyLog.calculateCaloriesIn();
+        dailyLog.calculateCaloriesOut();
+        dailyLogRepository.save(dailyLog);
     }
 
     @Override
@@ -85,14 +104,22 @@ public class MealLogServiceImpl implements MealLogService {
     }
 
     @Override
+    public List<MealLogResponse> getByDailyLogId(Integer dailyLogId) {
+        return mealLogRepository.findByDailyLogId(dailyLogId).stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
     public MealLogResponse mapToResponse(MealLog mealLog) {
         if (mealLog == null) return null;
 
         return MealLogResponse.builder()
                 .id(mealLog.getId())
-                .accountId(mealLog.getAccount().getId())
+                .dailyLogId(mealLog.getDailyLog().getId())
                 .mealType(mealLog.getMealType())
-                .mealDate(mealLog.getMealDate())
+                .mealTypeName(mealLog.getMealType().getName())
+                .mealDate(mealLog.getDailyLog().getLoggedDate())
                 .loggedTime(mealLog.getLoggedTime())
                 .totalCalories(mealLog.getTotalCalories())
                 .notes(mealLog.getNotes())

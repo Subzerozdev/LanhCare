@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MealFoodRequest {
-    private int quantity;
-    private int foodItemId;
-    private int mealId;
+    private Integer quantity;
+    private Integer foodItemId;
+    private Integer mealId;
 }

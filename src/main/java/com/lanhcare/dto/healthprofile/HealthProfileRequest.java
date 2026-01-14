@@ -1,8 +1,8 @@
 package com.lanhcare.dto.healthprofile;
 
-import com.lanhcare.enums.ActivityLevel;
-import com.lanhcare.enums.Gender;
-import com.lanhcare.enums.HealthGoal;
+import com.lanhcare.enums.healthprofile.ActivityLevel;
+import com.lanhcare.enums.healthprofile.Gender;
+import com.lanhcare.enums.healthprofile.HealthGoal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class HealthProfileRequest {
-    private int accountId;
+    private Integer accountId;
     private LocalDate dateOfBirth;
     private Gender gender;
     private BigDecimal heightCm;
