@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ICD11Code")
+@Table(name = "icd11_code")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,11 +33,14 @@ public class ICD11Code {
     
     @Column(name = "definition_en", columnDefinition = "TEXT")
     private String definitionEn;
+
+    @Column(name = "long_definition_en", columnDefinition = "TEXT")
+    private String longDefinitionEn;
     
     @Column(name = "exclusion_terms_en", columnDefinition = "TEXT")
     private String exclusionTermsEn;
 
-    @Column(name = "classKind", columnDefinition = "TEXT")
+    @Column(name = "class_kind", columnDefinition = "TEXT")
     private String classKind;
     
     // Self-referencing for hierarchical structure
@@ -45,15 +48,9 @@ public class ICD11Code {
     @JoinColumn(name = "parent_uri")
     private ICD11Code parent;
     
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent")
     @Builder.Default
     private List<ICD11Code> children = new ArrayList<>();
-    
-//    @Column(name = "is_residual_category")
-//    private Boolean isResidualCategory;
-    
-//    @Column(name = "is_leaf")
-//    private Boolean isLeaf;
 
     @CreationTimestamp
     @Column(name = "created_date")
@@ -68,15 +65,15 @@ public class ICD11Code {
     private ICD11Status status;
     
     // Relationships
-    @OneToMany(mappedBy = "icdCode", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "icdCode")
     @Builder.Default
     private List<ICD11Translation> translations = new ArrayList<>();
     
-    @OneToMany(mappedBy = "icdCode", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "icdCode")
     @Builder.Default
     private List<DietaryRestriction> dietaryRestrictions = new ArrayList<>();
     
-    @OneToMany(mappedBy = "icdCode", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "icdCode")
     @Builder.Default
     private List<MedicalSpecialty> medicalSpecialties = new ArrayList<>();
 }

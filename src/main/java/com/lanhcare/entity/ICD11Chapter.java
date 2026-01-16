@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ICD11Chapter")
+@Table(name = "icd11_chapter")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,7 +36,7 @@ public class ICD11Chapter {
     private ICD11Status status;
     
     // Relationships
-    @OneToMany(mappedBy = "chapter", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chapter")
     @Builder.Default
     private List<ICD11Code> codes = new ArrayList<>();
 }

@@ -25,6 +25,9 @@ public class IcdEntityDTO {
     @JsonProperty(value = "definition")
     private IcdTextDTO definitionEn;
 
+    @JsonProperty(value = "longDefinition")
+    private IcdTextDTO longDefinitionEn;
+
     @JsonProperty(value = "classKind")
     private String classKind;
 

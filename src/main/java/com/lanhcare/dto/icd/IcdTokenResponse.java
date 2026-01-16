@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class IcdTokenResponse {
     @JsonProperty(value = "access_token")
-    private String accessToken;
+    private String token;
 
     @JsonProperty(value = "expires_in")
     private Long expiresIn;
