@@ -16,4 +16,12 @@ public class ValidationUtils {
             return null;
         }
     }
+
+    public static boolean isValidIcdCode(String icdCode) {
+        if (isNullOrEmpty(icdCode)) return false;
+
+        if (icdCode.equals("unspecified")) return false;
+
+        return !icdCode.equals("other");
+    }
 }

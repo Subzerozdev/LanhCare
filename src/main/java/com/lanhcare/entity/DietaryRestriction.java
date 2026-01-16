@@ -9,7 +9,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "DietaryRestriction")
+@Table(name = "dietary_restriction")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

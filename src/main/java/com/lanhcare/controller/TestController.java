@@ -24,7 +24,7 @@ public class TestController {
     @GetMapping("/icd/access-token")
     @Operation(summary = "Get icd access token", description = "Get icd access token")
     public ResponseEntity<String> getAccessToken() {
-        String accessToken = icdApiService.getAccessToken().getAccessToken();
+        String accessToken = icdApiService.getAccessToken().getToken();
         return ResponseEntity.status(HttpStatus.CREATED).body(accessToken);
     }
 
@@ -51,8 +51,8 @@ public class TestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(entity);
     }
 
-    @GetMapping("/icd/all-chapter")
-    @Operation(summary = "Get All Chapter Entity", description = "Get All Chapter Entity")
+    @GetMapping("/icd/data")
+    @Operation(summary = "Seed All Icd Entity", description = "Seed All Icd Entity")
     public ResponseEntity<?> getChapterEntities() {
         List<ICD11Chapter> chapters = icdApiService.seedICDData();
         return ResponseEntity.status(HttpStatus.CREATED).body(chapters);
