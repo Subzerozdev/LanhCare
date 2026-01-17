@@ -27,7 +27,7 @@ public class ExerciseLog {
     private BigDecimal caloriesOut;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "daily_log_id", nullable = false)
+    @JoinColumn(name = "daily_log_entry_id", nullable = false)
     private DailyLog dailyLog;
 
     @ManyToOne(fetch = FetchType.LAZY)

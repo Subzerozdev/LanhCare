@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
@@ -16,6 +17,7 @@ public class VectorStoreConfig {
     private final JdbcTemplate jdbcTemplate;
     private final EmbeddingModel embeddingModel;
 
+    @Lazy
     @Bean
     @Qualifier("ragVectorStore")
     public VectorStore ragVectorStore(
@@ -32,6 +34,7 @@ public class VectorStoreConfig {
                 .build();
     }
 
+    @Lazy
     @Bean
     @Qualifier("chatMemoryVectorStore")
     public VectorStore chatMemoryVectorStore(
