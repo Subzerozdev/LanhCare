@@ -19,11 +19,12 @@ public class VectorStoreConfig {
     @Bean
     @Qualifier("ragVectorStore")
     public VectorStore ragVectorStore(
-            @Value("${spring.ai.vectorstore.pgvector.rag.table-name}") String tableName
+            @Value("${spring.ai.vectorstore.pgvector.rag.table-name}") String tableName,
+            @Value("${spring.ai.vectorstore.pgvector.dimensions:768}") int dimensions
     ) {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
                 .vectorTableName(tableName)
-                .dimensions(384)
+                .dimensions(dimensions)
                 .indexType(PgVectorStore.PgIndexType.HNSW)
                 .distanceType(PgVectorStore.PgDistanceType.COSINE_DISTANCE)
                 .initializeSchema(true)
@@ -34,11 +35,12 @@ public class VectorStoreConfig {
     @Bean
     @Qualifier("chatMemoryVectorStore")
     public VectorStore chatMemoryVectorStore(
-            @Value("${spring.ai.vectorstore.pgvector.chatmemory.table-name}") String tableName
+            @Value("${spring.ai.vectorstore.pgvector.chatmemory.table-name}") String tableName,
+            @Value("${spring.ai.vectorstore.pgvector.dimensions:768}") int dimensions
     ) {
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
                 .vectorTableName(tableName)
-                .dimensions(384)
+                .dimensions(dimensions)
                 .indexType(PgVectorStore.PgIndexType.HNSW)
                 .distanceType(PgVectorStore.PgDistanceType.COSINE_DISTANCE)
                 .initializeSchema(true)
