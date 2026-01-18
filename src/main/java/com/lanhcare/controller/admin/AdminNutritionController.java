@@ -188,6 +188,16 @@ public class AdminNutritionController {
         return ResponseEntity.ok(ApiResponse.success("Nutrients retrieved successfully", nutrients));
     }
     
+    /**
+     * Get nutrient by ID
+     */
+    @GetMapping("/nutrients/{id}")
+    @Operation(summary = "Get nutrient detail", description = "Get detailed information about a nutrient")
+    public ResponseEntity<ApiResponse<Nutrient>> getNutrientById(@PathVariable Integer id) {
+        Nutrient nutrient = nutritionService.getNutrientById(id);
+        return ResponseEntity.ok(ApiResponse.success("Nutrient retrieved successfully", nutrient));
+    }
+    
     @PostMapping("/nutrients")
     @Operation(summary = "Create nutrient", description = "Create a new nutrient")
     public ResponseEntity<ApiResponse<Nutrient>> createNutrient(

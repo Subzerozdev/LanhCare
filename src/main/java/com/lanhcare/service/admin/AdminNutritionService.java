@@ -267,6 +267,21 @@ public class AdminNutritionService {
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Get nutrient by ID
+     */
+    @Transactional(readOnly = true)
+    public Nutrient getNutrientById(Integer id) {
+        Nutrient nutrient = nutrientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Nutrient not found with ID: " + id));
+        
+        if (nutrient.getIsDeleted()) {
+            throw new ResourceNotFoundException("Nutrient has been deleted");
+        }
+        
+        return nutrient;
+    }
+    
     public Nutrient createNutrient(AdminNutrientRequest request) {
         if (nutrientRepository.existsByName(request.getName())) {
             throw new ResourceAlreadyExistsException("Nutrient already exists");
