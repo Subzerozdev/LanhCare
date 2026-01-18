@@ -113,11 +113,11 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
      * Get revenue statistics by month
      * Using native PostgreSQL query with to_char() function
      * Hibernate converts camelCase to snake_case: transactionDate -> transaction_date
-     * Table name "Transaction" is case-sensitive and needs quotes
+     * Try both quoted and unquoted table name for compatibility
      */
     @Query(value = "SELECT TO_CHAR(t.transaction_date, 'YYYY-MM') as month, " +
            "COUNT(t.id) as count, COALESCE(SUM(t.amount), 0) as revenue " +
-           "FROM \"Transaction\" t WHERE t.status = 'COMPLETED' " +
+           "FROM transaction t WHERE t.status = 'COMPLETED' " +
            "AND t.transaction_date >= CAST(:startDate AS timestamp) " +
            "AND t.transaction_date <= CAST(:endDate AS timestamp) " +
            "GROUP BY TO_CHAR(t.transaction_date, 'YYYY-MM') " +
