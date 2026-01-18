@@ -111,13 +111,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     
     /**
      * Get revenue statistics by month
+     * Using PostgreSQL to_char() function instead of MySQL DATE_FORMAT()
      */
-    @Query("SELECT FUNCTION('DATE_FORMAT', t.transactionDate, '%Y-%m') as month, " +
-           "COUNT(t) as count, COALESCE(SUM(t.amount), 0) as revenue " +
-           "FROM Transaction t WHERE t.status = 'COMPLETED' " +
-           "AND t.transactionDate BETWEEN :startDate AND :endDate " +
-           "GROUP BY FUNCTION('DATE_FORMAT', t.transactionDate, '%Y-%m') " +
-           "ORDER BY month")
+    @Query(value = "SELECT TO_CHAR(t.transaction_date, 'YYYY-MM') as month, " +
+           "COUNT(t.id) as count, COALESCE(SUM(t.amount), 0) as revenue " +
+           "FROM transactions t WHERE t.status = 'COMPLETED' " +
+           "AND t.transaction_date BETWEEN :startDate AND :endDate " +
+           "GROUP BY TO_CHAR(t.transaction_date, 'YYYY-MM') " +
+           "ORDER BY month", nativeQuery = true)
     List<Object[]> getRevenueStatsByMonth(@Param("startDate") LocalDateTime startDate,
                                           @Param("endDate") LocalDateTime endDate);
     
