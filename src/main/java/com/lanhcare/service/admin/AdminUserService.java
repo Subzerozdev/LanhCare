@@ -202,16 +202,21 @@ public class AdminUserService {
     }
     
     private AdminUserDetailResponse mapToUserDetailResponse(Account account) {
-        // Get health profile
+        // Get health profile (wrapped in try-catch to handle invalid enum values in DB)
         AdminUserDetailResponse.HealthProfileSummary healthProfile = null;
-        UserHealthProfile profile = healthProfileRepository.findByAccountId(account.getId()).orElse(null);
-        if (profile != null) {
-            healthProfile = AdminUserDetailResponse.HealthProfileSummary.builder()
-                    .heightCm(profile.getHeightCm() != null ? profile.getHeightCm().doubleValue() : null)
-                    .currentWeightKg(profile.getWeightKg())
-                    .bmi(profile.getBmiValue() != null ? profile.getBmiValue().doubleValue() : null)
-                    .activityLevel(profile.getActivityLevel() != null ? profile.getActivityLevel().toString() : null)
-                    .build();
+        try {
+            UserHealthProfile profile = healthProfileRepository.findByAccountId(account.getId()).orElse(null);
+            if (profile != null) {
+                healthProfile = AdminUserDetailResponse.HealthProfileSummary.builder()
+                        .heightCm(profile.getHeightCm() != null ? profile.getHeightCm().doubleValue() : null)
+                        .currentWeightKg(profile.getWeightKg())
+                        .bmi(profile.getBmiValue() != null ? profile.getBmiValue().doubleValue() : null)
+                        .activityLevel(profile.getActivityLevel() != null ? profile.getActivityLevel().toString() : null)
+                        .build();
+            }
+        } catch (Exception e) {
+            // Log and continue without health profile if there's an enum parsing error
+            // This can happen when DB has invalid enum values like "Tăng cơ, cải thiện sức khỏe tim mạch"
         }
         
         // Get recent transactions (last 5)

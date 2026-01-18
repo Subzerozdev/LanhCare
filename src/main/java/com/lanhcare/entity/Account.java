@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lanhcare.enums.AccountRole;
 import com.lanhcare.enums.AccountStatus;
 import jakarta.persistence.*;
@@ -39,18 +40,22 @@ public class Account {
     private AccountStatus status = AccountStatus.ACTIVE;
     
     // Relationships
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     @Builder.Default
     private List<Transaction> transactions = new ArrayList<>();
     
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     @Builder.Default
     private List<FCMToken> fcmTokens = new ArrayList<>();
     
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private UserHealthProfile healthProfile;
     
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     @Builder.Default
     private List<DailyLog> dailyLogs = new ArrayList<>();
 }
