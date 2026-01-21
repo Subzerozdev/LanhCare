@@ -29,6 +29,12 @@ public class GeminiAIConfig {
     }
 
     @Bean
+    @Primary
+    public EmbeddingModel defaultEmbeddingModel(EmbeddingModel embeddingModel) {
+        return embeddingModel;
+    }
+
+    @Bean
     public ChatClient chatClient(
             ChatClient.Builder chatClient,
             @Qualifier("ragVectorStore") VectorStore ragVectorStore
