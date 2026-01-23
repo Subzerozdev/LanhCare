@@ -5,12 +5,14 @@ import com.lanhcare.dto.ai.AIResponse;
 import com.lanhcare.service.AIService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/public/ai")
@@ -24,6 +26,7 @@ public class AIController {
     ) throws IOException {
 //        request.setIsMember(token != null);
 //        request.setToken(token);
+        log.info("AI Request Received: {}", request);
         AIResponse response = aiService.generateResponse(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

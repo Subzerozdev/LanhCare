@@ -4,6 +4,7 @@ import com.lanhcare.dto.ai.AIRequest;
 import com.lanhcare.dto.ai.AIResponse;
 import com.lanhcare.exception.exps.AIException;
 import com.lanhcare.service.AIService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -28,6 +29,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AIServiceImpl implements AIService {
 
@@ -107,6 +109,8 @@ public class AIServiceImpl implements AIService {
                 )
         );
 
+        log.info("Ready to send request");
+
         // 4. Send enriched prompt to the LLM
         // 'G' (Generation) in RAG
         AIResponse aiResponse = chatClient
@@ -114,6 +118,8 @@ public class AIServiceImpl implements AIService {
                 .advisors(chatMemoryAdvisor)
                 .call()
                 .entity(AIResponse.class);
+
+        log.info("Response: {}", aiResponse);
 
         assert aiResponse != null;
 //        if (aiResponse.getMessageType().equals("order")
@@ -131,6 +137,8 @@ public class AIServiceImpl implements AIService {
         if (isFastApiHealthy() && request.getIsSpeech().equals(Boolean.TRUE)) {
             aiResponse.setAudioBase64(Base64.getEncoder().encodeToString(synthesizeSpeech(aiResponse.getMessage())));
         }
+
+        log.info("Response after audio process: {}", aiResponse);
 
         return aiResponse;
     }
