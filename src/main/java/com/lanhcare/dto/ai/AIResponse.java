@@ -14,5 +14,5 @@ public class AIResponse {
 //    private String messageType;
 //    private String messageRoute;
     private String message;
-//    private String audioBase64;
+    private String audioBase64;
 }

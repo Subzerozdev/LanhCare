@@ -13,15 +13,14 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping("/api/public/ai")
 @Tag(name = "User - AI Chatbot", description = "APIs for user AI Chatbot")
 public class AIController {
     private final AIService aiService;
 
     @PostMapping("/prompt")
     public ResponseEntity<?> promptAI(
-            @RequestBody AIRequest request,
-            @RequestHeader(value = "Authorization", required = false) String token
+            @RequestBody AIRequest request
     ) throws IOException {
 //        request.setIsMember(token != null);
 //        request.setToken(token);

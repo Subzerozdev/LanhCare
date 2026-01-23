@@ -7,4 +7,8 @@ import java.io.IOException;
 
 public interface AIService {
     AIResponse generateResponse(AIRequest request) throws IOException;
+
+    byte[] synthesizeSpeech(String text);
+
+    boolean isFastApiHealthy();
 }
