@@ -2,8 +2,8 @@ package com.lanhcare.service.impls;
 
 import com.lanhcare.dto.ai.AIRequest;
 import com.lanhcare.dto.ai.AIResponse;
+import com.lanhcare.exception.exps.AIException;
 import com.lanhcare.service.AIService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.VectorStoreChatMemoryAdvisor;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -13,12 +13,19 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +35,9 @@ public class AIServiceImpl implements AIService {
     private ChatClient chatClient;
 
     @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
     @Qualifier("ragVectorStore")
     private VectorStore ragVectorStore;
 
@@ -35,8 +45,12 @@ public class AIServiceImpl implements AIService {
     @Qualifier("chatMemoryVectorStore")
     private VectorStore chatMemoryVectorStore;
 
+    @Value("${app.tts-api.url}")
+    private String ttsUrl;
+
     @Override
-    public AIResponse generateResponse(AIRequest request) throws IOException { String message = request.getMessage();
+    public AIResponse generateResponse(AIRequest request) {
+        String message = request.getMessage();
 //        String conversationId = conversationId(request);
 
         VectorStoreChatMemoryAdvisor chatMemoryAdvisor = VectorStoreChatMemoryAdvisor
@@ -101,7 +115,7 @@ public class AIServiceImpl implements AIService {
                 .call()
                 .entity(AIResponse.class);
 
-//        assert aiResponse != null;
+        assert aiResponse != null;
 //        if (aiResponse.getMessageType().equals("order")
 //                && Boolean.TRUE.equals(aiResponse.getIsAcceptBooking())
 //                && validateOrderFields(aiResponse.getCreateOrderRequest())
@@ -112,12 +126,51 @@ public class AIServiceImpl implements AIService {
 //        }
 //        aiResponse.setConversationId(conversationId);
 //
-//        aiResponse.setAudioBase64(null);
-//        if (isFastApiHealthy() && request.getIsSpeech().equals(Boolean.TRUE)) {
-//            aiResponse.setAudioBase64(Base64.getEncoder().encodeToString(synthesizeSpeech(aiResponse.getMessage())));
-//        }
+        aiResponse.setAudioBase64(null);
+
+        if (isFastApiHealthy() && request.getIsSpeech().equals(Boolean.TRUE)) {
+            aiResponse.setAudioBase64(Base64.getEncoder().encodeToString(synthesizeSpeech(aiResponse.getMessage())));
+        }
 
         return aiResponse;
+    }
+
+    @Override
+    public byte[] synthesizeSpeech(String text) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, String> requestBody = new ConcurrentHashMap<>();
+        requestBody.put("text", text);
+
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+        try {
+            String fastApiTtsUrl = ttsUrl + "/synthesize_speech";
+            ResponseEntity<Map> response = restTemplate.postForEntity(fastApiTtsUrl, request, Map.class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                String base64Audio = (String) response.getBody().get("audio_base64");
+                if (base64Audio != null && !base64Audio.isEmpty()) {
+                    return Base64.getDecoder().decode(base64Audio);
+                }
+            }
+            return new byte[0];
+        } catch (AIException e) {
+            return new byte[0];
+        }
+    }
+
+    @Override
+    public boolean isFastApiHealthy() {
+        try {
+            String fastApiHealthUrl = ttsUrl;
+            ResponseEntity<Map> response = restTemplate.getForEntity(fastApiHealthUrl, Map.class);
+
+            return response.getStatusCode().is2xxSuccessful()
+                    && Boolean.TRUE.equals(Objects.requireNonNull(response.getBody()).get("model_loaded"));
+        } catch (AIException e) {
+            return false;
+        }
     }
 
     private String extractFromDocument(Document document) {
