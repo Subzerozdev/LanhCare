@@ -20,7 +20,7 @@ public class VectorStoreConfig {
     @Bean
     @Qualifier("ragVectorStore")
     public VectorStore ragVectorStore(
-            EmbeddingModel embeddingModel,
+            @Qualifier("embeddingModel") EmbeddingModel embeddingModel,
             @Value("${spring.ai.vectorstore.pgvector.rag.table-name}") String tableName,
             @Value("${spring.ai.vectorstore.pgvector.dimensions:768}") int dimensions
     ) {
@@ -38,7 +38,7 @@ public class VectorStoreConfig {
     @Bean
     @Qualifier("chatMemoryVectorStore")
     public VectorStore chatMemoryVectorStore(
-            EmbeddingModel embeddingModel,
+            @Qualifier("embeddingModel") EmbeddingModel embeddingModel,
             @Value("${spring.ai.vectorstore.pgvector.chatmemory.table-name}") String tableName,
             @Value("${spring.ai.vectorstore.pgvector.dimensions:768}") int dimensions
     ) {

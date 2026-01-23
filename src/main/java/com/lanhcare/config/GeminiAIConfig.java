@@ -28,11 +28,11 @@ public class GeminiAIConfig {
                 .build();
     }
 
-    @Bean
-    @Primary
-    public EmbeddingModel primaryEmbeddingModel(@Qualifier("embeddingModel") EmbeddingModel embeddingModel) {
-        return embeddingModel;
-    }
+//    @Bean
+//    @Primary
+//    public EmbeddingModel primaryEmbeddingModel(@Qualifier("embeddingModel") EmbeddingModel embeddingModel) {
+//        return embeddingModel;
+//    }
 
     @Bean
     public ChatClient chatClient(
