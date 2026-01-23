@@ -64,6 +64,8 @@ public class AIServiceImpl implements AIService {
                 .defaultTopK(10)
                 .build();
 
+        log.info("Prepare Advisor");
+
         // 1. Perform a similarity search in the vector store
         // 'R' (Retrieval) in RAG
         List<Document> similarDocuments = ragVectorStore.similaritySearch(
@@ -72,6 +74,8 @@ public class AIServiceImpl implements AIService {
                         .topK(10)
                         .build()
         );
+
+        log.info("Prepare Doc");
 
         // 2. Extract relevant content from retrieved documents
         assert similarDocuments != null;
@@ -89,6 +93,8 @@ public class AIServiceImpl implements AIService {
 //            orderInfo = request.getCreateOrderRequest().toString();
 //        }
 
+        log.info("Prepare Prompt");
+
         // 3. Construct a prompt for the LLM using the retrieved context
         String promptText = """                
                 Context:
@@ -100,6 +106,8 @@ public class AIServiceImpl implements AIService {
                 User Question: {message}
                 
                 """;
+
+        log.info("Prepare Template");
 
         PromptTemplate promptTemplate = new PromptTemplate(promptText);
         Prompt prompt = promptTemplate.create(

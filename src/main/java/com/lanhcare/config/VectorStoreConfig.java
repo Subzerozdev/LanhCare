@@ -17,7 +17,7 @@ public class VectorStoreConfig {
     private final JdbcTemplate jdbcTemplate;
     private final EmbeddingModel embeddingModel;
 
-    @Lazy
+//    @Lazy
     @Bean
     @Qualifier("ragVectorStore")
     public VectorStore ragVectorStore(
@@ -34,7 +34,7 @@ public class VectorStoreConfig {
                 .build();
     }
 
-    @Lazy
+//    @Lazy
     @Bean
     @Qualifier("chatMemoryVectorStore")
     public VectorStore chatMemoryVectorStore(
