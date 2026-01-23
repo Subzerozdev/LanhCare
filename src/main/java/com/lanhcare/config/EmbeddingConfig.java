@@ -25,7 +25,7 @@ public class EmbeddingConfig {
      */
     @Bean("productionEmbeddingModel")
     @ConditionalOnMissingBean(EmbeddingModel.class)
-//    @Profile("prod")
+    @Profile("prod")
     @ConditionalOnProperty(name = "spring.ai.transformers.enabled", havingValue = "false", matchIfMissing = true)
     public OpenAiEmbeddingModel productionEmbeddingModel(
             @Value("${spring.ai.openai.api-key}") String apiKey,
