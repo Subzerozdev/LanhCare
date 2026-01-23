@@ -15,12 +15,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @RequiredArgsConstructor
 public class VectorStoreConfig {
     private final JdbcTemplate jdbcTemplate;
-    private final EmbeddingModel embeddingModel;
 
 //    @Lazy
     @Bean
     @Qualifier("ragVectorStore")
     public VectorStore ragVectorStore(
+            EmbeddingModel embeddingModel,
             @Value("${spring.ai.vectorstore.pgvector.rag.table-name}") String tableName,
             @Value("${spring.ai.vectorstore.pgvector.dimensions:768}") int dimensions
     ) {
@@ -38,6 +38,7 @@ public class VectorStoreConfig {
     @Bean
     @Qualifier("chatMemoryVectorStore")
     public VectorStore chatMemoryVectorStore(
+            EmbeddingModel embeddingModel,
             @Value("${spring.ai.vectorstore.pgvector.chatmemory.table-name}") String tableName,
             @Value("${spring.ai.vectorstore.pgvector.dimensions:768}") int dimensions
     ) {
