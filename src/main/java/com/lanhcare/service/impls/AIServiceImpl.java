@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,9 @@ public class AIServiceImpl implements AIService {
     private String ttsUrl;
 
     @Override
-    public AIResponse generateResponse(AIRequest request) {
+    public AIResponse generateResponse(AIRequest request)  throws IOException {
+        log.info("Prepare to request");
+
         String message = request.getMessage();
 //        String conversationId = conversationId(request);
 
