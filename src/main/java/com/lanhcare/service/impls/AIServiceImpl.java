@@ -40,13 +40,13 @@ public class AIServiceImpl implements AIService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    @Qualifier("ragVectorStore")
-    private VectorStore ragVectorStore;
-
-    @Autowired
-    @Qualifier("chatMemoryVectorStore")
-    private VectorStore chatMemoryVectorStore;
+//    @Autowired
+//    @Qualifier("ragVectorStore")
+//    private VectorStore ragVectorStore;
+//
+//    @Autowired
+//    @Qualifier("chatMemoryVectorStore")
+//    private VectorStore chatMemoryVectorStore;
 
     @Value("${app.tts-api.url}")
     private String ttsUrl;
@@ -58,35 +58,35 @@ public class AIServiceImpl implements AIService {
         String message = request.getMessage();
 //        String conversationId = conversationId(request);
 
-        VectorStoreChatMemoryAdvisor chatMemoryAdvisor = VectorStoreChatMemoryAdvisor
-                .builder(chatMemoryVectorStore)
-//                .conversationId(conversationId)
-                .defaultTopK(10)
-                .build();
+//        VectorStoreChatMemoryAdvisor chatMemoryAdvisor = VectorStoreChatMemoryAdvisor
+//                .builder(chatMemoryVectorStore)
+////                .conversationId(conversationId)
+//                .defaultTopK(10)
+//                .build();
 
         log.info("Prepare Advisor");
 
         // 1. Perform a similarity search in the vector store
         // 'R' (Retrieval) in RAG
-        List<Document> similarDocuments = ragVectorStore.similaritySearch(
-                SearchRequest.builder().query(message)
-                        // Retrieve top 10 most similar documents
-                        .topK(10)
-                        .build()
-        );
+//        List<Document> similarDocuments = ragVectorStore.similaritySearch(
+//                SearchRequest.builder().query(message)
+//                        // Retrieve top 10 most similar documents
+//                        .topK(10)
+//                        .build()
+//        );
 
         log.info("Prepare Doc");
 
         // 2. Extract relevant content from retrieved documents
-        assert similarDocuments != null;
-        String context = similarDocuments.stream()
-                .map(Document::getText)
-                // Combine them into a single context string
-                .collect(Collectors.joining("\n\n"));
-
-        String metadataInfo = similarDocuments.stream()
-                .map(this::extractFromDocument)
-                .collect(Collectors.joining("\n"));
+//        assert similarDocuments != null;
+//        String context = similarDocuments.stream()
+//                .map(Document::getText)
+//                // Combine them into a single context string
+//                .collect(Collectors.joining("\n\n"));
+//
+//        String metadataInfo = similarDocuments.stream()
+//                .map(this::extractFromDocument)
+//                .collect(Collectors.joining("\n"));
 
 //        String orderInfo = "none";
 //        if (request.getCreateOrderRequest() != null) {
@@ -97,12 +97,7 @@ public class AIServiceImpl implements AIService {
 
         // 3. Construct a prompt for the LLM using the retrieved context
         String promptText = """                
-                Context:
-                {context}
-                
-                Relevant Metadata:
-                {metadataInfo}
-                
+
                 User Question: {message}
                 
                 """;
@@ -112,8 +107,8 @@ public class AIServiceImpl implements AIService {
         PromptTemplate promptTemplate = new PromptTemplate(promptText);
         Prompt prompt = promptTemplate.create(
                 Map.of(
-                        "context", context,
-                        "metadataInfo", metadataInfo,
+//                        "context", context,
+//                        "metadataInfo", metadataInfo,
                         "message", message
 //                        "orderInfo", orderInfo,
 //                        "userAccount", Boolean.TRUE.equals(request.getIsMember()) ? "member" : "none"
@@ -126,7 +121,7 @@ public class AIServiceImpl implements AIService {
         // 'G' (Generation) in RAG
         AIResponse aiResponse = chatClient
                 .prompt(prompt)
-                .advisors(chatMemoryAdvisor)
+//                .advisors(chatMemoryAdvisor)
                 .call()
                 .entity(AIResponse.class);
 

@@ -1,10 +1,8 @@
 package com.lanhcare.config;
 
-import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.openai.OpenAiEmbeddingModel;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +22,8 @@ public class EmbeddingConfig {
      * This is lightweight and doesn't cause OutOfMemoryError
      */
 //    @Bean("productionEmbeddingModel")
-//    @ConditionalOnMissingBean(EmbeddingModel.class)
-////    @Profile("prod")
+//    @Primary
+//    @Profile("prod")
 //    @ConditionalOnProperty(name = "spring.ai.transformers.enabled", havingValue = "false", matchIfMissing = true)
 //    public OpenAiEmbeddingModel productionEmbeddingModel(
 //            @Value("${spring.ai.openai.api-key}") String apiKey,
