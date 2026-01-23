@@ -30,7 +30,7 @@ public class GeminiAIConfig {
 
     @Bean
     @Primary
-    public EmbeddingModel defaultEmbeddingModel(EmbeddingModel embeddingModel) {
+    public EmbeddingModel primaryEmbeddingModel(@Qualifier("embeddingModel") EmbeddingModel embeddingModel) {
         return embeddingModel;
     }
 
