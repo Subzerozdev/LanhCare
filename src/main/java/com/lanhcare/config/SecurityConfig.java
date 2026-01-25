@@ -80,7 +80,7 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain googleResourceServerFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/auth/google/android-callback")
+        http.securityMatcher("/api/auth/google/android-callback")
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize

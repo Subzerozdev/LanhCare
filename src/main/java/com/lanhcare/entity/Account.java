@@ -27,7 +27,7 @@ public class Account {
     @Column(name = "fullname")
     private String fullname;
     
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
     
     @Enumerated(EnumType.STRING)
