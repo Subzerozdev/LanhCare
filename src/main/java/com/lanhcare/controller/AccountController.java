@@ -2,6 +2,7 @@ package com.lanhcare.controller;
 
 import com.lanhcare.dto.account.AccountResponse;
 import com.lanhcare.dto.account.UpdateAccountRequest;
+import com.lanhcare.security.JwtTokenProvider;
 import com.lanhcare.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,9 +25,11 @@ import java.util.List;
 public class AccountController {
     
     private final AccountService accountService;
+    private final JwtTokenProvider jwtTokenProvider;
     
     // Manual constructor instead of @RequiredArgsConstructor
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
         this.accountService = accountService;
     }
     
@@ -38,6 +41,21 @@ public class AccountController {
     public ResponseEntity<AccountResponse> getCurrentAccount(
             @RequestAttribute("userEmail") String email) {
         AccountResponse account = accountService.getAccountByEmail(email);
+        return ResponseEntity.ok(account);
+    }
+
+    /**
+     * Get current user's account info
+     */
+    @GetMapping("/profile")
+    @Operation(summary = "Get current user's account profile", description = "Get the authenticated user's account profile information")
+    public ResponseEntity<AccountResponse> getAccountProfile(
+            @RequestHeader("Authorization") String token
+    ) {
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        int accountId = accountService.getAccountByEmail(email).getId();
+
+        AccountResponse account = accountService.getAccountById(accountId);
         return ResponseEntity.ok(account);
     }
     
