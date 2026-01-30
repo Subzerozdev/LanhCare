@@ -40,13 +40,13 @@ public class AIServiceImpl implements AIService {
     @Autowired
     private RestTemplate restTemplate;
 
-//    @Autowired
-//    @Qualifier("ragVectorStore")
-//    private VectorStore ragVectorStore;
-//
-//    @Autowired
-//    @Qualifier("chatMemoryVectorStore")
-//    private VectorStore chatMemoryVectorStore;
+    @Autowired
+    @Qualifier("ragVectorStore")
+    private VectorStore ragVectorStore;
+
+    @Autowired
+    @Qualifier("chatMemoryVectorStore")
+    private VectorStore chatMemoryVectorStore;
 
     @Value("${app.tts-api.url}")
     private String ttsUrl;
@@ -56,42 +56,42 @@ public class AIServiceImpl implements AIService {
         log.info("Prepare to request");
 
         String message = request.getMessage();
-//        String conversationId = conversationId(request);
+        String conversationId = conversationId(request);
 
-//        VectorStoreChatMemoryAdvisor chatMemoryAdvisor = VectorStoreChatMemoryAdvisor
-//                .builder(chatMemoryVectorStore)
-////                .conversationId(conversationId)
-//                .defaultTopK(10)
-//                .build();
+        VectorStoreChatMemoryAdvisor chatMemoryAdvisor = VectorStoreChatMemoryAdvisor
+                .builder(chatMemoryVectorStore)
+                .conversationId(conversationId)
+                .defaultTopK(10)
+                .build();
 
         log.info("Prepare Advisor");
 
         // 1. Perform a similarity search in the vector store
         // 'R' (Retrieval) in RAG
-//        List<Document> similarDocuments = ragVectorStore.similaritySearch(
-//                SearchRequest.builder().query(message)
-//                        // Retrieve top 10 most similar documents
-//                        .topK(10)
-//                        .build()
-//        );
+        List<Document> similarDocuments = ragVectorStore.similaritySearch(
+                SearchRequest.builder().query(message)
+                        // Retrieve top 10 most similar documents
+                        .topK(10)
+                        .build()
+        );
 
         log.info("Prepare Doc");
 
         // 2. Extract relevant content from retrieved documents
-//        assert similarDocuments != null;
-//        String context = similarDocuments.stream()
-//                .map(Document::getText)
-//                // Combine them into a single context string
-//                .collect(Collectors.joining("\n\n"));
-//
-//        String metadataInfo = similarDocuments.stream()
-//                .map(this::extractFromDocument)
-//                .collect(Collectors.joining("\n"));
+        assert similarDocuments != null;
+        String context = similarDocuments.stream()
+                .map(Document::getText)
+                // Combine them into a single context string
+                .collect(Collectors.joining("\n\n"));
 
-//        String orderInfo = "none";
-//        if (request.getCreateOrderRequest() != null) {
-//            orderInfo = request.getCreateOrderRequest().toString();
-//        }
+        String metadataInfo = similarDocuments.stream()
+                .map(this::extractFromDocument)
+                .collect(Collectors.joining("\n"));
+
+        String orderInfo = "none";
+        if (request.getCreateOrderRequest() != null) {
+            orderInfo = request.getCreateOrderRequest().toString();
+        }
 
         log.info("Prepare Prompt");
 
@@ -107,11 +107,11 @@ public class AIServiceImpl implements AIService {
         PromptTemplate promptTemplate = new PromptTemplate(promptText);
         Prompt prompt = promptTemplate.create(
                 Map.of(
-//                        "context", context,
-//                        "metadataInfo", metadataInfo,
-                        "message", message
-//                        "orderInfo", orderInfo,
-//                        "userAccount", Boolean.TRUE.equals(request.getIsMember()) ? "member" : "none"
+                        "context", context,
+                        "metadataInfo", metadataInfo,
+                        "message", message,
+                        "orderInfo", orderInfo,
+                        "userAccount", Boolean.TRUE.equals(request.getIsMember()) ? "member" : "none"
                 )
         );
 
@@ -121,23 +121,22 @@ public class AIServiceImpl implements AIService {
         // 'G' (Generation) in RAG
         AIResponse aiResponse = chatClient
                 .prompt(prompt)
-//                .advisors(chatMemoryAdvisor)
+                .advisors(chatMemoryAdvisor)
                 .call()
                 .entity(AIResponse.class);
 
         log.info("Response: {}", aiResponse);
 
         assert aiResponse != null;
-//        if (aiResponse.getMessageType().equals("order")
-//                && Boolean.TRUE.equals(aiResponse.getIsAcceptBooking())
-//                && validateOrderFields(aiResponse.getCreateOrderRequest())
-//        ) {
-//            CreateOrderResponse response = bookingScheduleSeat(request, aiResponse);
-//            aiResponse.setMessageRoute(response.getPaymentUrl());
-//            aiResponse.setMessageType("order");
-//        }
-//        aiResponse.setConversationId(conversationId);
-//
+        if (aiResponse.getMessageType().equals("order")
+                && Boolean.TRUE.equals(aiResponse.getIsAcceptBooking())
+                && validateOrderFields(aiResponse.getCreateOrderRequest())
+        ) {
+            CreateOrderResponse response = bookingScheduleSeat(request, aiResponse);
+            aiResponse.setMessageRoute(response.getPaymentUrl());
+            aiResponse.setMessageType("order");
+        }
+        aiResponse.setConversationId(conversationId);
         aiResponse.setAudioBase64(null);
 
         if (isFastApiHealthy() && request.getIsSpeech().equals(Boolean.TRUE)) {
@@ -199,5 +198,33 @@ public class AIServiceImpl implements AIService {
         }
 
         return stringBuilder.toString();
+    }
+
+    private String conversationId(AIRequest request) {
+        // Generate or retrieve conversation ID
+        if (request.getConversationId() != null && !request.getConversationId().isEmpty()) {
+            return request.getConversationId();
+        }
+        // Generate new conversation ID (simple implementation)
+        return "conv_" + System.currentTimeMillis();
+    }
+
+    private boolean validateOrderFields(Object createOrderRequest) {
+        // TODO: Implement order validation logic
+        if (createOrderRequest == null) {
+            return false;
+        }
+        // Add validation logic here
+        return true;
+    }
+
+    private Object bookingScheduleSeat(AIRequest request, AIResponse aiResponse) {
+        // TODO: Implement booking logic
+        // This is a placeholder - implement actual booking service call
+        return new Object() {
+            public String getPaymentUrl() {
+                return "https://payment.example.com/checkout";
+            }
+        };
     }
 }

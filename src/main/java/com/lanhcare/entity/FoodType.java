@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "FoodType")
+@Table(name = "food_type")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

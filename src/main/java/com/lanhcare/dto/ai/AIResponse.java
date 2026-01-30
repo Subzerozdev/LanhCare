@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AIResponse {
-//    private String conversationId;
-//    private String messageType;
-//    private String messageRoute;
+    private String conversationId;
+    private String messageType;
+    private String messageRoute;
     private String message;
     private String audioBase64;
+    private Boolean isAcceptBooking;
+    private Object createOrderRequest;
 }

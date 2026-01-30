@@ -111,20 +111,23 @@ public class AdminMedicalSpecialtyService {
         Hospital hospital = hospitalRepository.findById(request.getHospitalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + request.getHospitalId()));
         
-        MedicalSpecialty.MedicalSpecialtyBuilder builder = MedicalSpecialty.builder()
-//                .hospital(hospital)
+        MedicalSpecialty specialty = MedicalSpecialty.builder()
                 .nameVn(request.getNameVn())
                 .nameEn(request.getNameEn())
-                .status(request.getStatus() != null ? request.getStatus() : SpecialtyStatus.ACTIVE);
+                .status(request.getStatus() != null ? request.getStatus() : SpecialtyStatus.ACTIVE)
+                .build();
         
-        // Set ICD code if provided
+        // Add hospital relationship (Many-to-Many)
+        specialty.getHospital().add(hospital);
+        
+        // Add ICD code relationship if provided (Many-to-Many)
         if (request.getIcdUri() != null && !request.getIcdUri().isEmpty()) {
             ICD11Code icdCode = icd11CodeRepository.findById(request.getIcdUri())
                     .orElseThrow(() -> new ResourceNotFoundException("ICD code not found with URI: " + request.getIcdUri()));
-//            builder.icdCode(icdCode);
+            specialty.getIcdCode().add(icdCode);
         }
         
-        MedicalSpecialty saved = specialtyRepository.save(builder.build());
+        MedicalSpecialty saved = specialtyRepository.save(specialty);
         return mapToResponse(saved);
     }
     
@@ -135,11 +138,13 @@ public class AdminMedicalSpecialtyService {
         MedicalSpecialty specialty = specialtyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medical specialty not found with ID: " + id));
         
-        // Update hospital if provided
+        // Update hospital relationship if provided (Many-to-Many)
         if (request.getHospitalId() != null) {
             Hospital hospital = hospitalRepository.findById(request.getHospitalId())
                     .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + request.getHospitalId()));
-//            specialty.setHospital(hospital);
+            if (!specialty.getHospital().contains(hospital)) {
+                specialty.getHospital().add(hospital);
+            }
         }
         
         // Update name fields
@@ -150,15 +155,15 @@ public class AdminMedicalSpecialtyService {
             specialty.setNameEn(request.getNameEn());
         }
         
-        // Update ICD code if provided
+        // Update ICD code relationship if provided (Many-to-Many)
         if (request.getIcdUri() != null && !request.getIcdUri().isEmpty()) {
             ICD11Code icdCode = icd11CodeRepository.findById(request.getIcdUri())
                     .orElseThrow(() -> new ResourceNotFoundException("ICD code not found with URI: " + request.getIcdUri()));
-//            specialty.setIcdCode(icdCode);
-        } else if (request.getIcdUri() == null && specialty.getIcdCode() != null) {
-            // Allow clearing ICD code by sending null
-            specialty.setIcdCode(null);
+            if (!specialty.getIcdCode().contains(icdCode)) {
+                specialty.getIcdCode().add(icdCode);
+            }
         }
+        // Note: We don't clear ICD codes when icdUri is null, as specialty can have multiple ICD codes
         
         // Update status
         if (request.getStatus() != null) {
@@ -201,16 +206,22 @@ public class AdminMedicalSpecialtyService {
                 .nameVn(specialty.getNameVn())
                 .nameEn(specialty.getNameEn())
                 .status(specialty.getStatus());
-//                .hospitalId(specialty.getHospital().getId())
-//                .hospitalName(specialty.getHospital().getName())
-//                .hospitalAddress(specialty.getHospital().getAddress());
         
-        // ICD Code info
-//        if (specialty.getIcdCode() != null) {
-//            builder.icdUri(specialty.getIcdCode().getIcdUri())
-//                    .icdCode(specialty.getIcdCode().getIcdCode())
-//                    .icdTitle(specialty.getIcdCode().getOriginalTitleEn());
-//        }
+        // Hospital info (Many-to-Many - get first hospital if exists)
+        if (specialty.getHospital() != null && !specialty.getHospital().isEmpty()) {
+            Hospital firstHospital = specialty.getHospital().get(0);
+            builder.hospitalId(firstHospital.getId())
+                   .hospitalName(firstHospital.getName())
+                   .hospitalAddress(firstHospital.getAddress());
+        }
+        
+        // ICD Code info (Many-to-Many - get first ICD code if exists)
+        if (specialty.getIcdCode() != null && !specialty.getIcdCode().isEmpty()) {
+            ICD11Code firstIcdCode = specialty.getIcdCode().get(0);
+            builder.icdUri(firstIcdCode.getIcdUri())
+                   .icdCode(firstIcdCode.getIcdCode())
+                   .icdTitle(firstIcdCode.getOriginalTitleEn());
+        }
         
         return builder.build();
     }

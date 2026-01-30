@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "ICD11Translation")
+@Table(name = "icd11_translation")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

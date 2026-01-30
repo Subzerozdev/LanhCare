@@ -27,24 +27,24 @@ public class GeminiAIConfig {
                 .maxMessages(5)
                 .build();
     }
-//
-////    @Bean
-////    @Primary
-////    public EmbeddingModel primaryEmbeddingModel(@Qualifier("embeddingModel") EmbeddingModel embeddingModel) {
-////        return embeddingModel;
-////    }
-//
+
+    @Bean
+    @Primary
+    public EmbeddingModel primaryEmbeddingModel(@Qualifier("embeddingModel") EmbeddingModel embeddingModel) {
+        return embeddingModel;
+    }
+
     @Bean
     public ChatClient chatClient(
-            ChatClient.Builder chatClient
-//            @Qualifier("ragVectorStore") VectorStore ragVectorStore
+            ChatClient.Builder chatClient,
+            @Qualifier("ragVectorStore") VectorStore ragVectorStore
     ) {
         // 1. Instructions
         String systemInstructions = readSystemInstructions();
 
         return chatClient
                 .defaultSystem(systemInstructions)
-//                .defaultAdvisors(new QuestionAnswerAdvisor(ragVectorStore))
+                .defaultAdvisors(new QuestionAnswerAdvisor(ragVectorStore))
                 .build();
     }
 

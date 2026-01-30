@@ -21,19 +21,19 @@ public class EmbeddingConfig {
      * Production: Use OpenAI-compatible Embeddings (works with Gemini API)
      * This is lightweight and doesn't cause OutOfMemoryError
      */
-//    @Bean("productionEmbeddingModel")
-//    @Primary
-//    @Profile("prod")
-//    @ConditionalOnProperty(name = "spring.ai.transformers.enabled", havingValue = "false", matchIfMissing = true)
-//    public OpenAiEmbeddingModel productionEmbeddingModel(
-//            @Value("${spring.ai.openai.api-key}") String apiKey,
-//            @Value("${spring.ai.openai.embedding.base-url:https://generativelanguage.googleapis.com}") String baseUrl
-//    ) {
-//        OpenAiApi openAiApi = OpenAiApi.builder()
-//                .apiKey(apiKey)
-//                .baseUrl(baseUrl)
-//                .build();
-//
-//        return new OpenAiEmbeddingModel(openAiApi);
-//    }
+    @Bean("productionEmbeddingModel")
+    @Primary
+    @Profile("prod")
+    @ConditionalOnProperty(name = "spring.ai.transformers.enabled", havingValue = "false", matchIfMissing = true)
+    public OpenAiEmbeddingModel productionEmbeddingModel(
+            @Value("${spring.ai.openai.api-key}") String apiKey,
+            @Value("${spring.ai.openai.embedding.base-url:https://generativelanguage.googleapis.com}") String baseUrl
+    ) {
+        OpenAiApi openAiApi = OpenAiApi.builder()
+                .apiKey(apiKey)
+                .baseUrl(baseUrl)
+                .build();
+
+        return new OpenAiEmbeddingModel(openAiApi);
+    }
 }
