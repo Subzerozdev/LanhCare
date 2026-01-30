@@ -50,6 +50,11 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     Page<Comment> findByAccountIdOrderByCreatedAtDesc(Integer accountId, Pageable pageable);
     
     /**
+     * Find all comments by account ID (for deletion)
+     */
+    List<Comment> findByAccountId(Integer accountId);
+    
+    /**
      * Find comments by account ID and deleted status
      */
     Page<Comment> findByAccountIdAndIsDeletedOrderByCreatedAtDesc(Integer accountId, Boolean isDeleted, Pageable pageable);

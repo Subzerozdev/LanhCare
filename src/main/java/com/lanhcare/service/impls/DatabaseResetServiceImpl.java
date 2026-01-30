@@ -82,161 +82,83 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
 
     /**
      * Delete all data except Admin accounts
-     * Using native queries with IN clause for better performance and compatibility
+     * Using JPA repository to avoid column name mismatch issues
      */
     private int deleteAllDataExceptAdmin() {
         log.info("Deleting all data except Admin accounts...");
         
-        // Get list of non-admin account IDs
-        List<Integer> nonAdminAccountIds = jdbcTemplate.queryForList(
-            "SELECT id FROM account WHERE role != 'ADMIN'", 
-            Integer.class
-        );
-        int countBefore = nonAdminAccountIds.size();
+        // Find all non-admin accounts
+        List<Account> allAccounts = accountRepository.findAll();
+        List<Account> nonAdminAccounts = allAccounts.stream()
+            .filter(account -> account.getRole() != AccountRole.ADMIN)
+            .toList();
+        int countBefore = nonAdminAccounts.size();
         
         if (countBefore == 0) {
             log.info("No non-admin accounts to delete");
         } else {
             log.info("Found {} non-admin accounts to delete", countBefore);
             
-            // Build IN clause placeholder
-            String placeholders = nonAdminAccountIds.stream()
-                .map(id -> "?")
-                .collect(java.util.stream.Collectors.joining(","));
-            
-            // Delete child tables step by step to avoid nested subqueries
-            if (!nonAdminAccountIds.isEmpty()) {
-                // Convert to Object array for JdbcTemplate
-                Object[] accountIdParams = nonAdminAccountIds.toArray();
+            // Delete data for each non-admin account using JPA (cascade will handle relationships)
+            for (Account account : nonAdminAccounts) {
+                Integer accountId = account.getId();
                 
-                // Step 1: Get IDs of related entities first
-                List<Integer> dailyLogIds = jdbcTemplate.queryForList(
-                    "SELECT id FROM daily_log WHERE account_id IN (" + placeholders + ")", 
-                    Integer.class, 
-                    accountIdParams
-                );
-                
-                List<Integer> mealLogIds = new ArrayList<>();
-                if (!dailyLogIds.isEmpty()) {
-                    String dailyLogPlaceholders = dailyLogIds.stream()
-                        .map(id -> "?")
-                        .collect(java.util.stream.Collectors.joining(","));
-                    // Convert to Integer array explicitly
-                    Integer[] dailyLogIdParams = dailyLogIds.toArray(new Integer[0]);
-                    mealLogIds = jdbcTemplate.queryForList(
-                        "SELECT id FROM meal_log WHERE daily_log_entry_id IN (" + dailyLogPlaceholders + ")", 
-                        Integer.class, 
-                        (Object[]) dailyLogIdParams
-                    );
+                // Delete comments and their media (cascade will handle comment_media)
+                List<Comment> comments = commentRepository.findByAccountId(accountId);
+                if (!comments.isEmpty()) {
+                    commentRepository.deleteAll(comments);
                 }
                 
-                List<Integer> commentIds = jdbcTemplate.queryForList(
-                    "SELECT id FROM comment WHERE account_id IN (" + placeholders + ")", 
-                    Integer.class, 
-                    accountIdParams
-                );
-                
-                List<Integer> postIds = jdbcTemplate.queryForList(
-                    "SELECT id FROM post WHERE account_id IN (" + placeholders + ")", 
-                    Integer.class, 
-                    accountIdParams
-                );
-                
-                List<Integer> healthProfileIds = jdbcTemplate.queryForList(
-                    "SELECT id FROM user_health_profile WHERE account_id IN (" + placeholders + ")", 
-                    Integer.class, 
-                    accountIdParams
-                );
-                
-                // Step 2: Delete child tables using the collected IDs
-                // Delete meal_food
-                if (!mealLogIds.isEmpty()) {
-                    String mealLogPlaceholders = mealLogIds.stream()
-                        .map(id -> "?")
-                        .collect(java.util.stream.Collectors.joining(","));
-                    Integer[] mealLogIdParams = mealLogIds.toArray(new Integer[0]);
-                    jdbcTemplate.update("DELETE FROM meal_food WHERE meal_log_id IN (" + mealLogPlaceholders + ")", 
-                        (Object[]) mealLogIdParams);
+                // Delete posts and their media (cascade will handle post_media)
+                List<Post> posts = postRepository.findByAccountId(accountId);
+                if (!posts.isEmpty()) {
+                    postRepository.deleteAll(posts);
                 }
                 
-                // Delete meal_log
-                if (!dailyLogIds.isEmpty()) {
-                    String dailyLogPlaceholders = dailyLogIds.stream()
-                        .map(id -> "?")
-                        .collect(java.util.stream.Collectors.joining(","));
-                    Integer[] dailyLogIdParams = dailyLogIds.toArray(new Integer[0]);
-                    jdbcTemplate.update("DELETE FROM meal_log WHERE daily_log_entry_id IN (" + dailyLogPlaceholders + ")", 
-                        (Object[]) dailyLogIdParams);
-                }
-                
-                // Delete exercise_log
-                if (!dailyLogIds.isEmpty()) {
-                    String dailyLogPlaceholders = dailyLogIds.stream()
-                        .map(id -> "?")
-                        .collect(java.util.stream.Collectors.joining(","));
-                    Integer[] dailyLogIdParams = dailyLogIds.toArray(new Integer[0]);
-                    jdbcTemplate.update("DELETE FROM exercise_log WHERE daily_log_entry_id IN (" + dailyLogPlaceholders + ")", 
-                        (Object[]) dailyLogIdParams);
-                }
-                
-                // Delete daily_log
-                jdbcTemplate.update("DELETE FROM daily_log WHERE account_id IN (" + placeholders + ")", 
-                    accountIdParams);
-                
-                // Delete comment_media
-                if (!commentIds.isEmpty()) {
-                    String commentPlaceholders = commentIds.stream()
-                        .map(id -> "?")
-                        .collect(java.util.stream.Collectors.joining(","));
-                    Integer[] commentIdParams = commentIds.toArray(new Integer[0]);
-                    jdbcTemplate.update("DELETE FROM comment_media WHERE comment_id IN (" + commentPlaceholders + ")", 
-                        (Object[]) commentIdParams);
-                }
-                
-                // Delete comments
-                jdbcTemplate.update("DELETE FROM comment WHERE account_id IN (" + placeholders + ")", 
-                    accountIdParams);
-                
-                // Delete post_media
-                if (!postIds.isEmpty()) {
-                    String postPlaceholders = postIds.stream()
-                        .map(id -> "?")
-                        .collect(java.util.stream.Collectors.joining(","));
-                    Integer[] postIdParams = postIds.toArray(new Integer[0]);
-                    jdbcTemplate.update("DELETE FROM post_media WHERE post_id IN (" + postPlaceholders + ")", 
-                        (Object[]) postIdParams);
-                }
-                
-                // Delete posts
-                jdbcTemplate.update("DELETE FROM post WHERE account_id IN (" + placeholders + ")", 
-                    accountIdParams);
-                
-                // Delete dietary_restriction
-                if (!healthProfileIds.isEmpty()) {
-                    String healthProfilePlaceholders = healthProfileIds.stream()
-                        .map(id -> "?")
-                        .collect(java.util.stream.Collectors.joining(","));
-                    Integer[] healthProfileIdParams = healthProfileIds.toArray(new Integer[0]);
-                    jdbcTemplate.update("DELETE FROM dietary_restriction WHERE user_health_profile_id IN (" + healthProfilePlaceholders + ")", 
-                        (Object[]) healthProfileIdParams);
+                // Delete daily logs (cascade will handle meal_log, meal_food, exercise_log)
+                List<DailyLog> dailyLogs = dailyLogRepository.findByAccountId(accountId);
+                if (!dailyLogs.isEmpty()) {
+                    // Delete meal_food first (through meal_log)
+                    for (DailyLog dailyLog : dailyLogs) {
+                        List<MealLog> mealLogs = mealLogRepository.findByDailyLogId(dailyLog.getId());
+                        for (MealLog mealLog : mealLogs) {
+                            List<MealFood> mealFoods = mealFoodRepository.findByMealLogId(mealLog.getId());
+                            if (!mealFoods.isEmpty()) {
+                                mealFoodRepository.deleteAll(mealFoods);
+                            }
+                        }
+                        if (!mealLogs.isEmpty()) {
+                            mealLogRepository.deleteAll(mealLogs);
+                        }
+                        
+                        // Delete exercise_log
+                        List<ExerciseLog> exerciseLogs = exerciseLogRepository.findByDailyLogId(dailyLog.getId());
+                        if (!exerciseLogs.isEmpty()) {
+                            exerciseLogRepository.deleteAll(exerciseLogs);
+                        }
+                    }
+                    dailyLogRepository.deleteAll(dailyLogs);
                 }
                 
                 // Delete transactions
-                jdbcTemplate.update("DELETE FROM transaction WHERE account_id IN (" + placeholders + ")", 
-                    accountIdParams);
+                List<Transaction> transactions = transactionRepository.findByAccountIdOrderByIdDesc(accountId);
+                if (!transactions.isEmpty()) {
+                    transactionRepository.deleteAll(transactions);
+                }
                 
-                // Delete fcmtoken
-                jdbcTemplate.update("DELETE FROM fcmtoken WHERE account_id IN (" + placeholders + ")", 
-                    accountIdParams);
+                // Delete FCM tokens
+                List<FCMToken> fcmTokens = fcmTokenRepository.findByAccountId(accountId);
+                if (!fcmTokens.isEmpty()) {
+                    fcmTokenRepository.deleteAll(fcmTokens);
+                }
                 
-                // Delete user_health_profile
-                jdbcTemplate.update("DELETE FROM user_health_profile WHERE account_id IN (" + placeholders + ")", 
-                    accountIdParams);
-                
-                // Delete non-admin accounts
-                jdbcTemplate.update("DELETE FROM account WHERE id IN (" + placeholders + ")", 
-                    accountIdParams);
+                // Delete health profiles (cascade will handle dietary_restriction)
+                healthProfileRepository.findByAccountId(accountId)
+                    .ifPresent(healthProfileRepository::delete);
             }
+            
+            // Delete non-admin accounts
+            accountRepository.deleteAll(nonAdminAccounts);
         }
         
         // Delete Many-to-Many join tables (these don't reference account directly)

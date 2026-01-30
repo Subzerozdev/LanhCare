@@ -40,6 +40,11 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Post> findByAccountIdOrderByCreatedAtDesc(Integer accountId, Pageable pageable);
     
     /**
+     * Find all posts by account ID (for deletion)
+     */
+    List<Post> findByAccountId(Integer accountId);
+    
+    /**
      * Find posts by account ID and deleted status
      */
     Page<Post> findByAccountIdAndIsDeletedOrderByCreatedAtDesc(Integer accountId, Boolean isDeleted, Pageable pageable);
