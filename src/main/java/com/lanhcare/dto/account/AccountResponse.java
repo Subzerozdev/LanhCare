@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountResponse {
-    
     private Integer id;
     private String email;
     private String fullname;
     private AccountRole role;
     private AccountStatus status;
+    private Boolean isHaveHealthProfile;
 }
