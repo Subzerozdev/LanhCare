@@ -1,9 +1,11 @@
 package com.lanhcare.controller;
 
+import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.icd.IcdEntityDTO;
 import com.lanhcare.dto.icd.ReleaseDTO;
 import com.lanhcare.dto.translator.TranslatorResponse;
 import com.lanhcare.entity.ICD11Chapter;
+import com.lanhcare.service.DatabaseResetService;
 import com.lanhcare.service.IcdApiService;
 import com.lanhcare.service.TranslatorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +22,7 @@ import java.util.List;
 public class TestController {
     private final IcdApiService icdApiService;
     private final TranslatorService translatorService;
+    private final DatabaseResetService databaseResetService;
 
     @GetMapping("/icd/access-token")
     @Operation(summary = "Get icd access token", description = "Get icd access token")
@@ -65,5 +68,15 @@ public class TestController {
     ) {
         TranslatorResponse response = translatorService.translateToVietnamese(text);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/reset-database")
+    @Operation(
+        summary = "Reset và nạp lại database", 
+        description = "Xóa tất cả data (trừ Admin accounts) và nạp lại data mẫu đầy đủ bằng tiếng Việt"
+    )
+    public ResponseEntity<ApiResponse<DatabaseResetService.ResetResult>> resetDatabase() {
+        DatabaseResetService.ResetResult result = databaseResetService.resetAndSeedDatabase();
+        return ResponseEntity.ok(ApiResponse.success("Reset database thành công", result));
     }
 }
