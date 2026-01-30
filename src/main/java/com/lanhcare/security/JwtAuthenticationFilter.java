@@ -1,21 +1,34 @@
 package com.lanhcare.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * JWT Authentication Filter
@@ -23,67 +36,54 @@ import java.io.IOException;
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-    
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserDetailsService userDetailsService;
-    
-    // Manual constructor instead of @RequiredArgsConstructor
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, 
-                                   UserDetailsService userDetailsService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
-    }
-    
+    @Value("${app.jwt.secret}")
+    private String jwtKey;
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
-        
-        try {
-            // Extract JWT from request
-            String jwt = getJwtFromRequest(request);
-            
-            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-                // Get email from token
-                String email = jwtTokenProvider.getEmailFromToken(jwt);
-                
-                // Load user details
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                
-                // Create authentication token
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-                
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                // Set authentication in SecurityContext
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                
-                // Set userEmail attribute for controllers
-                request.setAttribute("userEmail", email);
+            FilterChain filterChain) throws ServletException, IOException
+    {
+        String jwt = request.getHeader("Authorization");
+        if (jwt != null) {
+            jwt = jwt.substring(7);
+
+            try {
+
+                SecretKey key = Keys.hmacShaKeyFor(jwtKey.getBytes());
+                Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
+                String identifier = claims.get("identifier", String.class);
+                String role = claims.get("authorities", String.class);
+                updateAuthentication(identifier, role);
+
+            } catch (ExpiredJwtException exception) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The token is expired!");
+            } catch (MalformedJwtException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The token is not valid!");
+            } catch (Exception e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed");
             }
-        } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
         }
-        
         filterChain.doFilter(request, response);
     }
-    
-    /**
-     * Extract JWT token from Authorization header
-     */
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+
+    private void updateAuthentication(String username, String role) {
+        List<GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(role);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        AntPathMatcher matcher = new AntPathMatcher();
+        return Arrays
+                .stream(WHITELIST)
+                .anyMatch(p -> matcher.match(p, request.getRequestURI()));
+    }
+
+    public final String[] WHITELIST = {
+            "/auth/google/android-callback",
+            "/api/payments/vnpay/callback"
+    };
 }

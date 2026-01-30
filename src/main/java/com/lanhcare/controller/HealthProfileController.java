@@ -28,8 +28,7 @@ public class HealthProfileController {
             @RequestBody HealthProfileRequest request,
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        int accountId = accountService.getAccountByEmail(email).getId();
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         request.setAccountId(accountId);
 
         UserHealthProfile profile = healthProfileService.create(request);
@@ -43,8 +42,7 @@ public class HealthProfileController {
             @RequestBody HealthProfileRequest request,
             @RequestHeader("Authorization") String token
             ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        int accountId = accountService.getAccountByEmail(email).getId();
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         request.setAccountId(accountId);
 
         UserHealthProfile profile = healthProfileService.update(request);
@@ -67,8 +65,7 @@ public class HealthProfileController {
     public ResponseEntity<ApiResponse<HealthProfileResponse>> getByAccountId(
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        int accountId = accountService.getAccountByEmail(email).getId();
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         UserHealthProfile profile = healthProfileService.getByAccountId(accountId);
         HealthProfileResponse response = healthProfileService.mapToResponse(profile);
         return ResponseEntity.ok(ApiResponse.success("Health profile retrieved successfully", response));

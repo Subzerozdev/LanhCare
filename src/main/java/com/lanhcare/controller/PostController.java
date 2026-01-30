@@ -24,8 +24,7 @@ public class PostController {
             @RequestBody PostRequest request,
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        int accountId = accountService.getAccountByEmail(email).getId();
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         request.setAccountId(accountId);
 
         return ResponseEntity.ok(postService.mapToPostResponse(
