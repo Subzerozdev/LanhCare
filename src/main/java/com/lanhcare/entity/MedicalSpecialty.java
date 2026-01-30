@@ -4,32 +4,33 @@ import com.lanhcare.enums.SpecialtyStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
-@Table(name = "MedicalSpecialty")
+@Table(name = "medical_specialty")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MedicalSpecialty {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hospital_id")
-    private Hospital hospital;
-    
+
+    @ManyToMany(mappedBy = "medicalSpecialties")
+    private List<Hospital> hospital;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "icd_uri")
     private ICD11Code icdCode;
-    
+
     @Column(name = "name_vn")
     private String nameVn;
-    
+
     @Column(name = "name_en")
     private String nameEn;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private SpecialtyStatus status;

@@ -118,7 +118,6 @@ public class SecurityConfig {
      * Supports local development, Render deployment, and production environments
      */
     @Bean
-    @Order(2)
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
@@ -171,6 +170,7 @@ public class SecurityConfig {
      * HTTP Security filter chain
      */
     @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // Disable CSRF for stateless REST API

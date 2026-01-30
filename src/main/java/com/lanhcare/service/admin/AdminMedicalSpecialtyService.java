@@ -112,7 +112,7 @@ public class AdminMedicalSpecialtyService {
                 .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + request.getHospitalId()));
         
         MedicalSpecialty.MedicalSpecialtyBuilder builder = MedicalSpecialty.builder()
-                .hospital(hospital)
+//                .hospital(hospital)
                 .nameVn(request.getNameVn())
                 .nameEn(request.getNameEn())
                 .status(request.getStatus() != null ? request.getStatus() : SpecialtyStatus.ACTIVE);
@@ -139,7 +139,7 @@ public class AdminMedicalSpecialtyService {
         if (request.getHospitalId() != null) {
             Hospital hospital = hospitalRepository.findById(request.getHospitalId())
                     .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + request.getHospitalId()));
-            specialty.setHospital(hospital);
+//            specialty.setHospital(hospital);
         }
         
         // Update name fields
@@ -200,10 +200,10 @@ public class AdminMedicalSpecialtyService {
                 .id(specialty.getId())
                 .nameVn(specialty.getNameVn())
                 .nameEn(specialty.getNameEn())
-                .status(specialty.getStatus())
-                .hospitalId(specialty.getHospital().getId())
-                .hospitalName(specialty.getHospital().getName())
-                .hospitalAddress(specialty.getHospital().getAddress());
+                .status(specialty.getStatus());
+//                .hospitalId(specialty.getHospital().getId())
+//                .hospitalName(specialty.getHospital().getName())
+//                .hospitalAddress(specialty.getHospital().getAddress());
         
         // ICD Code info
         if (specialty.getIcdCode() != null) {

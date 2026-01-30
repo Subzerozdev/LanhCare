@@ -165,9 +165,9 @@ public class AdminHospitalService {
         MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Specialty not found with ID: " + specialtyId));
         
-        if (!specialty.getHospital().getId().equals(hospitalId)) {
-            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
-        }
+//        if (!specialty.getHospital().getId().equals(hospitalId)) {
+//            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
+//        }
         
         return mapToSpecialtyResponse(specialty);
     }
@@ -176,11 +176,11 @@ public class AdminHospitalService {
      * Add specialty to hospital
      */
     public AdminSpecialtyResponse addSpecialty(Integer hospitalId, AdminSpecialtyRequest request) {
-        Hospital hospital = hospitalRepository.findById(hospitalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + hospitalId));
+//        Hospital hospital = hospitalRepository.findById(hospitalId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Hospital not found with ID: " + hospitalId));
         
         MedicalSpecialty specialty = MedicalSpecialty.builder()
-                .hospital(hospital)
+//                .hospital(hospital)
                 .nameVn(request.getNameVn())
                 .nameEn(request.getNameEn())
                 .status(request.getStatus() != null ? request.getStatus() : SpecialtyStatus.ACTIVE)
@@ -198,9 +198,9 @@ public class AdminHospitalService {
         MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Specialty not found with ID: " + specialtyId));
         
-        if (!specialty.getHospital().getId().equals(hospitalId)) {
-            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
-        }
+//        if (!specialty.getHospital().getId().equals(hospitalId)) {
+//            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
+//        }
         
         specialty.setNameVn(request.getNameVn());
         specialty.setNameEn(request.getNameEn());
@@ -221,9 +221,9 @@ public class AdminHospitalService {
         MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Specialty not found with ID: " + specialtyId));
         
-        if (!specialty.getHospital().getId().equals(hospitalId)) {
-            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
-        }
+//        if (!specialty.getHospital().getId().equals(hospitalId)) {
+//            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
+//        }
         
         specialty.setStatus(status);
         MedicalSpecialty updated = specialtyRepository.save(specialty);
@@ -237,9 +237,9 @@ public class AdminHospitalService {
         MedicalSpecialty specialty = specialtyRepository.findById(specialtyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Specialty not found with ID: " + specialtyId));
         
-        if (!specialty.getHospital().getId().equals(hospitalId)) {
-            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
-        }
+//        if (!specialty.getHospital().getId().equals(hospitalId)) {
+//            throw new ResourceNotFoundException("Specialty does not belong to this hospital");
+//        }
         
         // Soft delete - set status to INACTIVE
         specialty.setStatus(SpecialtyStatus.INACTIVE);
@@ -248,7 +248,7 @@ public class AdminHospitalService {
     
     // ========== Helper Methods ==========
     
-    private AdminHospitalResponse mapToResponse(Hospital hospital) {
+    public AdminHospitalResponse mapToResponse(Hospital hospital) {
         long specialtyCount = specialtyRepository.countByHospitalId(hospital.getId());
         
         return AdminHospitalResponse.builder()
@@ -262,14 +262,14 @@ public class AdminHospitalService {
                 .build();
     }
     
-    private AdminSpecialtyResponse mapToSpecialtyResponse(MedicalSpecialty specialty) {
+    public AdminSpecialtyResponse mapToSpecialtyResponse(MedicalSpecialty specialty) {
         AdminSpecialtyResponse.AdminSpecialtyResponseBuilder builder = AdminSpecialtyResponse.builder()
                 .id(specialty.getId())
                 .nameVn(specialty.getNameVn())
                 .nameEn(specialty.getNameEn())
-                .status(specialty.getStatus())
-                .hospitalId(specialty.getHospital().getId())
-                .hospitalName(specialty.getHospital().getName());
+                .status(specialty.getStatus());
+//                .hospitalId(specialty.getHospital().getId())
+//                .hospitalName(specialty.getHospital().getName());
         
         // Add ICD-11 info if linked
         if (specialty.getIcdCode() != null) {

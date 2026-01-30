@@ -55,7 +55,10 @@ public interface MedicalSpecialtyRepository extends JpaRepository<MedicalSpecial
     /**
      * Search specialties by name (Vietnamese or English) and hospital
      */
-    @Query("SELECT ms FROM MedicalSpecialty ms WHERE ms.hospital.id = :hospitalId AND " +
+    @Query("SELECT ms " +
+            "FROM MedicalSpecialty ms " +
+            "JOIN Hospital h ON h.id = :hospitalId " +
+            "WHERE " +
            "(LOWER(ms.nameVn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(ms.nameEn) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<MedicalSpecialty> searchByHospitalIdAndName(@Param("hospitalId") Integer hospitalId,
@@ -65,8 +68,10 @@ public interface MedicalSpecialtyRepository extends JpaRepository<MedicalSpecial
     /**
      * Search specialties by name (Vietnamese or English), hospital and status
      */
-    @Query("SELECT ms FROM MedicalSpecialty ms WHERE ms.hospital.id = :hospitalId AND ms.status = :status AND " +
-           "(LOWER(ms.nameVn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+    @Query("SELECT ms " +
+            "FROM MedicalSpecialty ms " +
+            "JOIN Hospital h ON h.id = :hospitalId " +
+            "WHERE " +           "(LOWER(ms.nameVn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(ms.nameEn) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<MedicalSpecialty> searchByHospitalIdAndStatusAndName(@Param("hospitalId") Integer hospitalId,
                                                                 @Param("status") SpecialtyStatus status,
