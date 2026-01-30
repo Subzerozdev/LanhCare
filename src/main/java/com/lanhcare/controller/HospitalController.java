@@ -1,7 +1,6 @@
 package com.lanhcare.controller;
 
 import com.lanhcare.dto.admin.hospital.AdminHospitalResponse;
-import com.lanhcare.dto.admin.hospital.AdminSpecialtyResponse;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.common.PageResponse;
 import com.lanhcare.enums.HospitalStatus;
@@ -40,15 +39,6 @@ public class HospitalController {
     public ResponseEntity<ApiResponse<AdminHospitalResponse>> getHospitalById(@PathVariable Integer id) {
         AdminHospitalResponse hospital = hospitalService.getHospitalById(id);
         return ResponseEntity.ok(ApiResponse.success("Hospital retrieved successfully", hospital));
-    }
-
-    @GetMapping("/{hospitalId}/specialties")
-    @Operation(summary = "Get hospital specialties", description = "Get all specialties for a specific hospital")
-    public ResponseEntity<ApiResponse<List<AdminSpecialtyResponse>>> getHospitalSpecialties(
-            @PathVariable Integer hospitalId) {
-
-        List<AdminSpecialtyResponse> specialties = hospitalService.getHospitalSpecialties(hospitalId);
-        return ResponseEntity.ok(ApiResponse.success("Specialties retrieved successfully", specialties));
     }
 
     @GetMapping("/specialties/{specialityId}")

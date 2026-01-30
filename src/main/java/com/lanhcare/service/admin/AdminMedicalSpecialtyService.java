@@ -121,7 +121,7 @@ public class AdminMedicalSpecialtyService {
         if (request.getIcdUri() != null && !request.getIcdUri().isEmpty()) {
             ICD11Code icdCode = icd11CodeRepository.findById(request.getIcdUri())
                     .orElseThrow(() -> new ResourceNotFoundException("ICD code not found with URI: " + request.getIcdUri()));
-            builder.icdCode(icdCode);
+//            builder.icdCode(icdCode);
         }
         
         MedicalSpecialty saved = specialtyRepository.save(builder.build());
@@ -154,7 +154,7 @@ public class AdminMedicalSpecialtyService {
         if (request.getIcdUri() != null && !request.getIcdUri().isEmpty()) {
             ICD11Code icdCode = icd11CodeRepository.findById(request.getIcdUri())
                     .orElseThrow(() -> new ResourceNotFoundException("ICD code not found with URI: " + request.getIcdUri()));
-            specialty.setIcdCode(icdCode);
+//            specialty.setIcdCode(icdCode);
         } else if (request.getIcdUri() == null && specialty.getIcdCode() != null) {
             // Allow clearing ICD code by sending null
             specialty.setIcdCode(null);
@@ -206,11 +206,11 @@ public class AdminMedicalSpecialtyService {
 //                .hospitalAddress(specialty.getHospital().getAddress());
         
         // ICD Code info
-        if (specialty.getIcdCode() != null) {
-            builder.icdUri(specialty.getIcdCode().getIcdUri())
-                    .icdCode(specialty.getIcdCode().getIcdCode())
-                    .icdTitle(specialty.getIcdCode().getOriginalTitleEn());
-        }
+//        if (specialty.getIcdCode() != null) {
+//            builder.icdUri(specialty.getIcdCode().getIcdUri())
+//                    .icdCode(specialty.getIcdCode().getIcdCode())
+//                    .icdTitle(specialty.getIcdCode().getOriginalTitleEn());
+//        }
         
         return builder.build();
     }

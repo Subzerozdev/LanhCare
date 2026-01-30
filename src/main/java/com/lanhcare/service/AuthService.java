@@ -18,7 +18,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -41,7 +40,6 @@ public class AuthService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
@@ -50,13 +48,11 @@ public class AuthService {
     public AuthService(
             AccountRepository accountRepository,
             PasswordEncoder passwordEncoder,
-            JwtTokenProvider jwtTokenProvider,
-            AuthenticationManager authenticationManager
+            JwtTokenProvider jwtTokenProvider
     ) {
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
-        this.authenticationManager = authenticationManager;
     }
 
     /**

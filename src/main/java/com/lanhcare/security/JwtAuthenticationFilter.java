@@ -83,7 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public final String[] WHITELIST = {
-            "/auth/google/android-callback",
+            "/api/auth/google/android-callback",
             "/api/payments/vnpay/callback"
     };
 }

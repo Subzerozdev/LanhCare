@@ -21,9 +21,8 @@ public class MedicalSpecialty {
     @ManyToMany(mappedBy = "medicalSpecialties")
     private List<Hospital> hospital;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "icd_uri")
-    private ICD11Code icdCode;
+    @ManyToMany(mappedBy = "medicalSpecialties")
+    private List<ICD11Code> icdCode;
 
     @Column(name = "name_vn")
     private String nameVn;

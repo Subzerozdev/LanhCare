@@ -72,8 +72,11 @@ public class ICD11Code {
     @OneToMany(mappedBy = "icdCode")
     @Builder.Default
     private List<DietaryRestriction> dietaryRestrictions = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "icdCode")
-    @Builder.Default
+
+    @ManyToMany
+    @JoinTable(name = "icd11_speciality",
+            joinColumns = @JoinColumn(name = "icd_uri"),
+            inverseJoinColumns = @JoinColumn(name = "speciality_id")
+    )
     private List<MedicalSpecialty> medicalSpecialties = new ArrayList<>();
 }
