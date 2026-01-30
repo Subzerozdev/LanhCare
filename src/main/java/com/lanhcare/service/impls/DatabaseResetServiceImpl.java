@@ -95,18 +95,19 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         
         // Delete child tables that reference Account (but keep Admin's data)
         // We need to delete records that belong to non-admin accounts first
-        jdbcTemplate.execute("DELETE FROM comment_media WHERE comment_id IN (SELECT id FROM comment WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM comment WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM post_media WHERE post_id IN (SELECT id FROM post WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM post WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM meal_food WHERE meal_log_id IN (SELECT id FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')))");
-        jdbcTemplate.execute("DELETE FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM exercise_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM dietary_restriction WHERE user_health_profile_id IN (SELECT id FROM user_health_profile WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM transaction WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM fcmtoken WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM user_health_profile WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        // Using EXISTS instead of nested IN subqueries for better PostgreSQL compatibility
+        jdbcTemplate.execute("DELETE FROM comment_media WHERE EXISTS (SELECT 1 FROM comment WHERE comment.id = comment_media.comment_id AND EXISTS (SELECT 1 FROM account WHERE account.id = comment.account_id AND account.role != 'ADMIN'))");
+        jdbcTemplate.execute("DELETE FROM comment WHERE EXISTS (SELECT 1 FROM account WHERE account.id = comment.account_id AND account.role != 'ADMIN')");
+        jdbcTemplate.execute("DELETE FROM post_media WHERE EXISTS (SELECT 1 FROM post WHERE post.id = post_media.post_id AND EXISTS (SELECT 1 FROM account WHERE account.id = post.account_id AND account.role != 'ADMIN'))");
+        jdbcTemplate.execute("DELETE FROM post WHERE EXISTS (SELECT 1 FROM account WHERE account.id = post.account_id AND account.role != 'ADMIN')");
+        jdbcTemplate.execute("DELETE FROM meal_food WHERE EXISTS (SELECT 1 FROM meal_log WHERE meal_log.id = meal_food.meal_log_id AND EXISTS (SELECT 1 FROM daily_log WHERE daily_log.id = meal_log.daily_log_entry_id AND EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN')))");
+        jdbcTemplate.execute("DELETE FROM meal_log WHERE EXISTS (SELECT 1 FROM daily_log WHERE daily_log.id = meal_log.daily_log_entry_id AND EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN'))");
+        jdbcTemplate.execute("DELETE FROM exercise_log WHERE EXISTS (SELECT 1 FROM daily_log WHERE daily_log.id = exercise_log.daily_log_entry_id AND EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN'))");
+        jdbcTemplate.execute("DELETE FROM daily_log WHERE EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN')");
+        jdbcTemplate.execute("DELETE FROM dietary_restriction WHERE EXISTS (SELECT 1 FROM user_health_profile WHERE user_health_profile.id = dietary_restriction.user_health_profile_id AND EXISTS (SELECT 1 FROM account WHERE account.id = user_health_profile.account_id AND account.role != 'ADMIN'))");
+        jdbcTemplate.execute("DELETE FROM transaction WHERE EXISTS (SELECT 1 FROM account WHERE account.id = transaction.account_id AND account.role != 'ADMIN')");
+        jdbcTemplate.execute("DELETE FROM fcmtoken WHERE EXISTS (SELECT 1 FROM account WHERE account.id = fcmtoken.account_id AND account.role != 'ADMIN')");
+        jdbcTemplate.execute("DELETE FROM user_health_profile WHERE EXISTS (SELECT 1 FROM account WHERE account.id = user_health_profile.account_id AND account.role != 'ADMIN')");
         
         // Delete non-admin accounts
         jdbcTemplate.execute("DELETE FROM account WHERE role != 'ADMIN'");
