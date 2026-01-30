@@ -1,7 +1,14 @@
 package com.lanhcare.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum AccountRole {
-    USER,
-    ADMIN,
-    STAFF,
+    USER("ROLE_USER"),
+    STAFF("ROLE_STAFF"),
+    ADMIN("ROLE_ADMIN");
+
+    private final String role;
 }

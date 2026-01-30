@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,7 +84,7 @@ public class AuthService {
         log.info("User registered successfully: {}", savedAccount.getEmail());
 
         // Generate JWT token
-        String token = jwtTokenProvider.generateToken(savedAccount.getEmail());
+        String token = jwtTokenProvider.generateToken(authenticate(savedAccount));
 
         return new AuthResponse(
                 token,
@@ -101,20 +103,13 @@ public class AuthService {
         log.info("Login attempt for email: {}", request.getEmail());
 
         try {
-            // Authenticate user
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
 
             // Get account details
             Account account = accountRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new AuthenticationException("Invalid credentials"));
 
             // Generate JWT token
-            String token = jwtTokenProvider.generateToken(authentication);
+            String token = jwtTokenProvider.generateToken(authenticate(account));
 
             log.info("User logged in successfully: {}", request.getEmail());
 
@@ -174,7 +169,7 @@ public class AuthService {
                     });
 
             // Generate JWT token
-            String token = jwtTokenProvider.generateToken(account.getEmail());
+            String token = jwtTokenProvider.generateToken(authenticate(account));
 
             log.info("Google OAuth login successful for: {}", email);
 
@@ -210,6 +205,11 @@ public class AuthService {
             throw new AuthenticationException("This account is already banned");
         }
 
-        return jwtTokenProvider.generateToken(email);
+        return jwtTokenProvider.generateToken(authenticate(googleAccount));
+    }
+
+    private Authentication authenticate(Account account) {
+        UserDetails userDetails = new User(account.getId().toString(), "", account.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

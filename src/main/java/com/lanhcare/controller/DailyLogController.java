@@ -31,8 +31,7 @@ public class DailyLogController {
             @RequestBody DailyLogRequest request,
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        Integer accountId = accountService.getAccountByEmail(email).getId();
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         request.setAccountId(accountId);
 
         return new ResponseEntity<>(dailyLogService.mapToResponse(
@@ -54,9 +53,7 @@ public class DailyLogController {
             @RequestHeader("Authorization") String token,
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        Integer accountId = accountService.getAccountByEmail(email).getId();
-
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         return ResponseEntity.ok(dailyLogService.mapToResponse(
                 dailyLogService.getLogByAccountAndDate(accountId, date)));
     }
@@ -66,8 +63,7 @@ public class DailyLogController {
     public ResponseEntity<List<DailyLogResponse>> getAllLogsByAccount(
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        Integer accountId = accountService.getAccountByEmail(email).getId();
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         return ResponseEntity.ok(dailyLogService.getAllLogsByAccountId(accountId));
     }
 

@@ -52,9 +52,7 @@ public class AccountController {
     public ResponseEntity<AccountResponse> getAccountProfile(
             @RequestHeader("Authorization") String token
     ) {
-        String email = jwtTokenProvider.getEmailFromToken(token);
-        int accountId = accountService.getAccountByEmail(email).getId();
-
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
         AccountResponse account = accountService.getAccountById(accountId);
         return ResponseEntity.ok(account);
     }
