@@ -104,43 +104,111 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
                 .map(id -> "?")
                 .collect(java.util.stream.Collectors.joining(","));
             
-            // Delete child tables using IN clause (simpler and more compatible)
+            // Delete child tables step by step to avoid nested subqueries
             if (!nonAdminAccountIds.isEmpty()) {
-                // Delete comment_media
-                jdbcTemplate.update("DELETE FROM comment_media WHERE comment_id IN (SELECT id FROM comment WHERE account_id IN (" + placeholders + "))", 
+                // Step 1: Get IDs of related entities first
+                List<Integer> dailyLogIds = jdbcTemplate.queryForList(
+                    "SELECT id FROM daily_log WHERE account_id IN (" + placeholders + ")", 
+                    Integer.class, 
+                    nonAdminAccountIds.toArray()
+                );
+                
+                List<Integer> mealLogIds = new ArrayList<>();
+                if (!dailyLogIds.isEmpty()) {
+                    String dailyLogPlaceholders = dailyLogIds.stream()
+                        .map(id -> "?")
+                        .collect(java.util.stream.Collectors.joining(","));
+                    mealLogIds = jdbcTemplate.queryForList(
+                        "SELECT id FROM meal_log WHERE daily_log_entry_id IN (" + dailyLogPlaceholders + ")", 
+                        Integer.class, 
+                        dailyLogIds.toArray()
+                    );
+                }
+                
+                List<Integer> commentIds = jdbcTemplate.queryForList(
+                    "SELECT id FROM comment WHERE account_id IN (" + placeholders + ")", 
+                    Integer.class, 
+                    nonAdminAccountIds.toArray()
+                );
+                
+                List<Integer> postIds = jdbcTemplate.queryForList(
+                    "SELECT id FROM post WHERE account_id IN (" + placeholders + ")", 
+                    Integer.class, 
+                    nonAdminAccountIds.toArray()
+                );
+                
+                List<Integer> healthProfileIds = jdbcTemplate.queryForList(
+                    "SELECT id FROM user_health_profile WHERE account_id IN (" + placeholders + ")", 
+                    Integer.class, 
+                    nonAdminAccountIds.toArray()
+                );
+                
+                // Step 2: Delete child tables using the collected IDs
+                // Delete meal_food
+                if (!mealLogIds.isEmpty()) {
+                    String mealLogPlaceholders = mealLogIds.stream()
+                        .map(id -> "?")
+                        .collect(java.util.stream.Collectors.joining(","));
+                    jdbcTemplate.update("DELETE FROM meal_food WHERE meal_log_id IN (" + mealLogPlaceholders + ")", 
+                        mealLogIds.toArray());
+                }
+                
+                // Delete meal_log
+                if (!dailyLogIds.isEmpty()) {
+                    String dailyLogPlaceholders = dailyLogIds.stream()
+                        .map(id -> "?")
+                        .collect(java.util.stream.Collectors.joining(","));
+                    jdbcTemplate.update("DELETE FROM meal_log WHERE daily_log_entry_id IN (" + dailyLogPlaceholders + ")", 
+                        dailyLogIds.toArray());
+                }
+                
+                // Delete exercise_log
+                if (!dailyLogIds.isEmpty()) {
+                    String dailyLogPlaceholders = dailyLogIds.stream()
+                        .map(id -> "?")
+                        .collect(java.util.stream.Collectors.joining(","));
+                    jdbcTemplate.update("DELETE FROM exercise_log WHERE daily_log_entry_id IN (" + dailyLogPlaceholders + ")", 
+                        dailyLogIds.toArray());
+                }
+                
+                // Delete daily_log
+                jdbcTemplate.update("DELETE FROM daily_log WHERE account_id IN (" + placeholders + ")", 
                     nonAdminAccountIds.toArray());
+                
+                // Delete comment_media
+                if (!commentIds.isEmpty()) {
+                    String commentPlaceholders = commentIds.stream()
+                        .map(id -> "?")
+                        .collect(java.util.stream.Collectors.joining(","));
+                    jdbcTemplate.update("DELETE FROM comment_media WHERE comment_id IN (" + commentPlaceholders + ")", 
+                        commentIds.toArray());
+                }
                 
                 // Delete comments
                 jdbcTemplate.update("DELETE FROM comment WHERE account_id IN (" + placeholders + ")", 
                     nonAdminAccountIds.toArray());
                 
                 // Delete post_media
-                jdbcTemplate.update("DELETE FROM post_media WHERE post_id IN (SELECT id FROM post WHERE account_id IN (" + placeholders + "))", 
-                    nonAdminAccountIds.toArray());
+                if (!postIds.isEmpty()) {
+                    String postPlaceholders = postIds.stream()
+                        .map(id -> "?")
+                        .collect(java.util.stream.Collectors.joining(","));
+                    jdbcTemplate.update("DELETE FROM post_media WHERE post_id IN (" + postPlaceholders + ")", 
+                        postIds.toArray());
+                }
                 
                 // Delete posts
                 jdbcTemplate.update("DELETE FROM post WHERE account_id IN (" + placeholders + ")", 
                     nonAdminAccountIds.toArray());
                 
-                // Delete meal_food (through meal_log -> daily_log -> account)
-                jdbcTemplate.update("DELETE FROM meal_food WHERE meal_log_id IN (SELECT id FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (" + placeholders + ")))", 
-                    nonAdminAccountIds.toArray());
-                
-                // Delete meal_log
-                jdbcTemplate.update("DELETE FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (" + placeholders + "))", 
-                    nonAdminAccountIds.toArray());
-                
-                // Delete exercise_log
-                jdbcTemplate.update("DELETE FROM exercise_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (" + placeholders + "))", 
-                    nonAdminAccountIds.toArray());
-                
-                // Delete daily_log
-                jdbcTemplate.update("DELETE FROM daily_log WHERE account_id IN (" + placeholders + ")", 
-                    nonAdminAccountIds.toArray());
-                
                 // Delete dietary_restriction
-                jdbcTemplate.update("DELETE FROM dietary_restriction WHERE user_health_profile_id IN (SELECT id FROM user_health_profile WHERE account_id IN (" + placeholders + "))", 
-                    nonAdminAccountIds.toArray());
+                if (!healthProfileIds.isEmpty()) {
+                    String healthProfilePlaceholders = healthProfileIds.stream()
+                        .map(id -> "?")
+                        .collect(java.util.stream.Collectors.joining(","));
+                    jdbcTemplate.update("DELETE FROM dietary_restriction WHERE user_health_profile_id IN (" + healthProfilePlaceholders + ")", 
+                        healthProfileIds.toArray());
+                }
                 
                 // Delete transactions
                 jdbcTemplate.update("DELETE FROM transaction WHERE account_id IN (" + placeholders + ")", 
