@@ -82,35 +82,83 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
 
     /**
      * Delete all data except Admin accounts
-     * Order: Child tables first, then parent tables
+     * Using native queries with IN clause for better performance and compatibility
      */
     private int deleteAllDataExceptAdmin() {
         log.info("Deleting all data except Admin accounts...");
         
-        // Count accounts to be deleted before deletion
-        Integer countBefore = jdbcTemplate.queryForObject(
-            "SELECT COUNT(*) FROM account WHERE role != 'ADMIN'", 
+        // Get list of non-admin account IDs
+        List<Integer> nonAdminAccountIds = jdbcTemplate.queryForList(
+            "SELECT id FROM account WHERE role != 'ADMIN'", 
             Integer.class
         );
+        int countBefore = nonAdminAccountIds.size();
         
-        // Delete child tables that reference Account (but keep Admin's data)
-        // We need to delete records that belong to non-admin accounts first
-        // Using EXISTS instead of nested IN subqueries for better PostgreSQL compatibility
-        jdbcTemplate.execute("DELETE FROM comment_media WHERE EXISTS (SELECT 1 FROM comment WHERE comment.id = comment_media.comment_id AND EXISTS (SELECT 1 FROM account WHERE account.id = comment.account_id AND account.role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM comment WHERE EXISTS (SELECT 1 FROM account WHERE account.id = comment.account_id AND account.role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM post_media WHERE EXISTS (SELECT 1 FROM post WHERE post.id = post_media.post_id AND EXISTS (SELECT 1 FROM account WHERE account.id = post.account_id AND account.role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM post WHERE EXISTS (SELECT 1 FROM account WHERE account.id = post.account_id AND account.role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM meal_food WHERE EXISTS (SELECT 1 FROM meal_log WHERE meal_log.id = meal_food.meal_log_id AND EXISTS (SELECT 1 FROM daily_log WHERE daily_log.id = meal_log.daily_log_entry_id AND EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN')))");
-        jdbcTemplate.execute("DELETE FROM meal_log WHERE EXISTS (SELECT 1 FROM daily_log WHERE daily_log.id = meal_log.daily_log_entry_id AND EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM exercise_log WHERE EXISTS (SELECT 1 FROM daily_log WHERE daily_log.id = exercise_log.daily_log_entry_id AND EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM daily_log WHERE EXISTS (SELECT 1 FROM account WHERE account.id = daily_log.account_id AND account.role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM dietary_restriction WHERE EXISTS (SELECT 1 FROM user_health_profile WHERE user_health_profile.id = dietary_restriction.user_health_profile_id AND EXISTS (SELECT 1 FROM account WHERE account.id = user_health_profile.account_id AND account.role != 'ADMIN'))");
-        jdbcTemplate.execute("DELETE FROM transaction WHERE EXISTS (SELECT 1 FROM account WHERE account.id = transaction.account_id AND account.role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM fcmtoken WHERE EXISTS (SELECT 1 FROM account WHERE account.id = fcmtoken.account_id AND account.role != 'ADMIN')");
-        jdbcTemplate.execute("DELETE FROM user_health_profile WHERE EXISTS (SELECT 1 FROM account WHERE account.id = user_health_profile.account_id AND account.role != 'ADMIN')");
-        
-        // Delete non-admin accounts
-        jdbcTemplate.execute("DELETE FROM account WHERE role != 'ADMIN'");
+        if (countBefore == 0) {
+            log.info("No non-admin accounts to delete");
+        } else {
+            log.info("Found {} non-admin accounts to delete", countBefore);
+            
+            // Build IN clause placeholder
+            String placeholders = nonAdminAccountIds.stream()
+                .map(id -> "?")
+                .collect(java.util.stream.Collectors.joining(","));
+            
+            // Delete child tables using IN clause (simpler and more compatible)
+            if (!nonAdminAccountIds.isEmpty()) {
+                // Delete comment_media
+                jdbcTemplate.update("DELETE FROM comment_media WHERE comment_id IN (SELECT id FROM comment WHERE account_id IN (" + placeholders + "))", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete comments
+                jdbcTemplate.update("DELETE FROM comment WHERE account_id IN (" + placeholders + ")", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete post_media
+                jdbcTemplate.update("DELETE FROM post_media WHERE post_id IN (SELECT id FROM post WHERE account_id IN (" + placeholders + "))", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete posts
+                jdbcTemplate.update("DELETE FROM post WHERE account_id IN (" + placeholders + ")", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete meal_food (through meal_log -> daily_log -> account)
+                jdbcTemplate.update("DELETE FROM meal_food WHERE meal_log_id IN (SELECT id FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (" + placeholders + ")))", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete meal_log
+                jdbcTemplate.update("DELETE FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (" + placeholders + "))", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete exercise_log
+                jdbcTemplate.update("DELETE FROM exercise_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (" + placeholders + "))", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete daily_log
+                jdbcTemplate.update("DELETE FROM daily_log WHERE account_id IN (" + placeholders + ")", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete dietary_restriction
+                jdbcTemplate.update("DELETE FROM dietary_restriction WHERE user_health_profile_id IN (SELECT id FROM user_health_profile WHERE account_id IN (" + placeholders + "))", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete transactions
+                jdbcTemplate.update("DELETE FROM transaction WHERE account_id IN (" + placeholders + ")", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete fcmtoken
+                jdbcTemplate.update("DELETE FROM fcmtoken WHERE account_id IN (" + placeholders + ")", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete user_health_profile
+                jdbcTemplate.update("DELETE FROM user_health_profile WHERE account_id IN (" + placeholders + ")", 
+                    nonAdminAccountIds.toArray());
+                
+                // Delete non-admin accounts
+                jdbcTemplate.update("DELETE FROM account WHERE id IN (" + placeholders + ")", 
+                    nonAdminAccountIds.toArray());
+            }
+        }
         
         // Delete Many-to-Many join tables (these don't reference account directly)
         jdbcTemplate.execute("TRUNCATE TABLE hospital_speciality RESTART IDENTITY CASCADE");
@@ -129,7 +177,7 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         jdbcTemplate.execute("TRUNCATE TABLE icd11_code RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_chapter RESTART IDENTITY CASCADE");
         
-        return countBefore != null ? countBefore : 0;
+        return countBefore;
     }
 
     /**
