@@ -119,6 +119,7 @@ public class AccountService {
                 .fullname(account.getFullname())
                 .role(account.getRole())
                 .status(account.getStatus())
+                .isHaveHealthProfile(account.getHealthProfile() != null)
                 .build();
     }
 }
