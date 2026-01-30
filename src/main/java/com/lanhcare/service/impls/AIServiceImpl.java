@@ -132,8 +132,9 @@ public class AIServiceImpl implements AIService {
                 && Boolean.TRUE.equals(aiResponse.getIsAcceptBooking())
                 && validateOrderFields(aiResponse.getCreateOrderRequest())
         ) {
-            CreateOrderResponse response = bookingScheduleSeat(request, aiResponse);
-            aiResponse.setMessageRoute(response.getPaymentUrl());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> response = (Map<String, Object>) bookingScheduleSeat(request, aiResponse);
+            aiResponse.setMessageRoute((String) response.get("paymentUrl"));
             aiResponse.setMessageType("order");
         }
         aiResponse.setConversationId(conversationId);
@@ -218,13 +219,11 @@ public class AIServiceImpl implements AIService {
         return true;
     }
 
-    private Object bookingScheduleSeat(AIRequest request, AIResponse aiResponse) {
+    private Map<String, Object> bookingScheduleSeat(AIRequest request, AIResponse aiResponse) {
         // TODO: Implement booking logic
         // This is a placeholder - implement actual booking service call
-        return new Object() {
-            public String getPaymentUrl() {
-                return "https://payment.example.com/checkout";
-            }
-        };
+        Map<String, Object> result = new ConcurrentHashMap<>();
+        result.put("paymentUrl", "https://payment.example.com/checkout");
+        return result;
     }
 }
