@@ -70,5 +70,19 @@ public interface ICD11TranslationRepository extends JpaRepository<ICD11Translati
      * Check if translation exists for a code
      */
     boolean existsByIcdCodeIcdUri(String icdUri);
+
+    /**
+     * Search translations with status filter
+     */
+    @Query("SELECT t FROM ICD11Translation t WHERE " +
+            "(LOWER(t.vnTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(t.vnDefinition) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(t.icdCode.definitionEn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(t.icdCode.longDefinitionEn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+            "LOWER(t.icdCode.originalTitleEn) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND t.status = :status " +
+            "ORDER BY t.id DESC")
+    List<ICD11Translation> searchTranslationsByStatus(@Param("search") String search,
+                                                      @Param("status") TranslationStatus status);
 }
 

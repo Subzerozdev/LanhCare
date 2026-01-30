@@ -265,18 +265,18 @@ public class AdminHospitalService {
     public AdminSpecialtyResponse mapToSpecialtyResponse(MedicalSpecialty specialty) {
         AdminSpecialtyResponse.AdminSpecialtyResponseBuilder builder = AdminSpecialtyResponse.builder()
                 .id(specialty.getId())
-                .nameVn(specialty.getNameVn())
+//                .nameVn(specialty.getNameVn())
                 .nameEn(specialty.getNameEn())
                 .status(specialty.getStatus());
 //                .hospitalId(specialty.getHospital().getId())
 //                .hospitalName(specialty.getHospital().getName());
         
         // Add ICD-11 info if linked
-        if (specialty.getIcdCode() != null) {
-            builder.icdUri(specialty.getIcdCode().getIcdUri())
-                    .icdCode(specialty.getIcdCode().getIcdCode())
-                    .icdTitle(specialty.getIcdCode().getOriginalTitleEn());
-        }
+//        if (specialty.getIcdCode() != null) {
+//            builder.icdUri(specialty.getIcdCode().getIcdUri())
+//                    .icdCode(specialty.getIcdCode().getIcdCode())
+//                    .icdTitle(specialty.getIcdCode().getOriginalTitleEn());
+//        }
         
         return builder.build();
     }
