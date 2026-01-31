@@ -694,7 +694,10 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         }
 
         dailyLog.calculateCaloriesIn();
-        dailyLog.calculateCaloriesOut();
+        // Only calculate calories out if health profile exists
+        if (user1.getHealthProfile() != null) {
+            dailyLog.calculateCaloriesOut();
+        }
         dailyLogRepository.save(dailyLog);
     }
 
