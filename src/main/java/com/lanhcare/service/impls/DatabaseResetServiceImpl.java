@@ -11,6 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,6 +27,9 @@ import java.util.List;
 public class DatabaseResetServiceImpl implements DatabaseResetService {
 
     private final JdbcTemplate jdbcTemplate;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
     
     // Repositories
     private final AccountRepository accountRepository;
@@ -180,6 +186,9 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         jdbcTemplate.execute("TRUNCATE TABLE icd11_translation RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_code RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_chapter RESTART IDENTITY CASCADE");
+        
+        // Clear persistence context to remove stale entity references
+        entityManager.clear();
         
         return countBefore;
     }
