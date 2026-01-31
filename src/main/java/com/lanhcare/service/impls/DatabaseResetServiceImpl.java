@@ -167,6 +167,9 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
             accountRepository.deleteAll(nonAdminAccounts);
         }
         
+        // Flush all pending JPA operations before JDBC truncation
+        entityManager.flush();
+        
         // Delete Many-to-Many join tables (these don't reference account directly)
         jdbcTemplate.execute("TRUNCATE TABLE hospital_speciality RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_speciality RESTART IDENTITY CASCADE");
@@ -187,8 +190,7 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         jdbcTemplate.execute("TRUNCATE TABLE icd11_code RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_chapter RESTART IDENTITY CASCADE");
         
-        // Flush pending JPA operations and clear persistence context
-        entityManager.flush();
+        // Clear persistence context to remove stale entity references
         entityManager.clear();
         
         return countBefore;
