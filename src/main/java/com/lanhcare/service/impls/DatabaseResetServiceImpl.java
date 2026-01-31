@@ -187,7 +187,8 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         jdbcTemplate.execute("TRUNCATE TABLE icd11_code RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_chapter RESTART IDENTITY CASCADE");
         
-        // Clear persistence context to remove stale entity references
+        // Flush pending JPA operations and clear persistence context
+        entityManager.flush();
         entityManager.clear();
         
         return countBefore;
