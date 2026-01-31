@@ -137,7 +137,7 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         jdbcTemplate.execute("DELETE FROM transaction WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
         
         // 10. FCM tokens
-        jdbcTemplate.execute("DELETE FROM fcm_token WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        jdbcTemplate.execute("DELETE FROM fcmtoken WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
         
         // 11. Dietary restrictions (child of health_profile)
         jdbcTemplate.execute("DELETE FROM dietary_restriction WHERE user_health_profile_id IN (SELECT id FROM user_health_profile WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
