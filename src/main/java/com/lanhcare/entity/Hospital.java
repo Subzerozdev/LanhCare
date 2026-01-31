@@ -42,5 +42,6 @@ public class Hospital {
             joinColumns = @JoinColumn(name = "hospital_id"),
             inverseJoinColumns = @JoinColumn(name = "speciality_id")
     )
+    @Builder.Default
     private List<MedicalSpecialty> medicalSpecialties = new ArrayList<>();
 }
