@@ -165,6 +165,9 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         jdbcTemplate.execute("TRUNCATE TABLE hospital_speciality RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_speciality RESTART IDENTITY CASCADE");
         
+        // Delete tables with foreign keys to icd11 first
+        jdbcTemplate.execute("TRUNCATE TABLE dietary_restriction RESTART IDENTITY CASCADE");
+        
         // Delete other independent tables (these don't have account references)
         jdbcTemplate.execute("TRUNCATE TABLE food_nutrient RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE food_item RESTART IDENTITY CASCADE");
