@@ -88,96 +88,70 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
 
     /**
      * Delete all data except Admin accounts
-     * Using JPA repository to avoid column name mismatch issues
+     * Using pure JDBC to avoid JPA/JDBC conflicts
      */
     private int deleteAllDataExceptAdmin() {
         log.info("Deleting all data except Admin accounts...");
         
-        // Find all non-admin accounts
-        List<Account> allAccounts = accountRepository.findAll();
-        List<Account> nonAdminAccounts = allAccounts.stream()
-            .filter(account -> account.getRole() != AccountRole.ADMIN)
-            .toList();
-        int countBefore = nonAdminAccounts.size();
+        // Clear persistence context first to avoid stale entities
+        entityManager.clear();
         
-        if (countBefore == 0) {
+        // Get count of non-admin accounts
+        Integer countBefore = jdbcTemplate.queryForObject(
+            "SELECT COUNT(*) FROM account WHERE role != 'ADMIN'", Integer.class);
+        
+        if (countBefore == null || countBefore == 0) {
             log.info("No non-admin accounts to delete");
         } else {
             log.info("Found {} non-admin accounts to delete", countBefore);
-            
-            // Delete data for each non-admin account using JPA (cascade will handle relationships)
-            for (Account account : nonAdminAccounts) {
-                Integer accountId = account.getId();
-                
-                // Delete comments and their media (cascade will handle comment_media)
-                List<Comment> comments = commentRepository.findByAccountId(accountId);
-                if (!comments.isEmpty()) {
-                    commentRepository.deleteAll(comments);
-                }
-                
-                // Delete posts and their media (cascade will handle post_media)
-                List<Post> posts = postRepository.findByAccountId(accountId);
-                if (!posts.isEmpty()) {
-                    postRepository.deleteAll(posts);
-                }
-                
-                // Delete daily logs (cascade will handle meal_log, meal_food, exercise_log)
-                List<DailyLog> dailyLogs = dailyLogRepository.findByAccountId(accountId);
-                if (!dailyLogs.isEmpty()) {
-                    // Delete meal_food first (through meal_log)
-                    for (DailyLog dailyLog : dailyLogs) {
-                        List<MealLog> mealLogs = mealLogRepository.findByDailyLogId(dailyLog.getId());
-                        for (MealLog mealLog : mealLogs) {
-                            List<MealFood> mealFoods = mealFoodRepository.findByMealLogId(mealLog.getId());
-                            if (!mealFoods.isEmpty()) {
-                                mealFoodRepository.deleteAll(mealFoods);
-                            }
-                        }
-                        if (!mealLogs.isEmpty()) {
-                            mealLogRepository.deleteAll(mealLogs);
-                        }
-                        
-                        // Delete exercise_log
-                        List<ExerciseLog> exerciseLogs = exerciseLogRepository.findByDailyLogId(dailyLog.getId());
-                        if (!exerciseLogs.isEmpty()) {
-                            exerciseLogRepository.deleteAll(exerciseLogs);
-                        }
-                    }
-                    dailyLogRepository.deleteAll(dailyLogs);
-                }
-                
-                // Delete transactions
-                List<Transaction> transactions = transactionRepository.findByAccountIdOrderByIdDesc(accountId);
-                if (!transactions.isEmpty()) {
-                    transactionRepository.deleteAll(transactions);
-                }
-                
-                // Delete FCM tokens
-                List<FCMToken> fcmTokens = fcmTokenRepository.findByAccountId(accountId);
-                if (!fcmTokens.isEmpty()) {
-                    fcmTokenRepository.deleteAll(fcmTokens);
-                }
-                
-                // Delete health profiles (cascade will handle dietary_restriction)
-                healthProfileRepository.findByAccountId(accountId)
-                    .ifPresent(healthProfileRepository::delete);
-            }
-            
-            // Delete non-admin accounts
-            accountRepository.deleteAll(nonAdminAccounts);
         }
         
-        // Flush all pending JPA operations before JDBC truncation
-        entityManager.flush();
+        // Delete in correct order (child tables first, respecting foreign keys)
+        // Using DELETE with subquery to only delete data for non-admin accounts
         
-        // Delete Many-to-Many join tables (these don't reference account directly)
+        // 1. Comment media (child of comment)
+        jdbcTemplate.execute("DELETE FROM comment_media WHERE comment_id IN (SELECT id FROM comment WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
+        
+        // 2. Comments
+        jdbcTemplate.execute("DELETE FROM comment WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        
+        // 3. Post media (child of post)
+        jdbcTemplate.execute("DELETE FROM post_media WHERE post_id IN (SELECT id FROM post WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
+        
+        // 4. Posts
+        jdbcTemplate.execute("DELETE FROM post WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        
+        // 5. Meal food (child of meal_log)
+        jdbcTemplate.execute("DELETE FROM meal_food WHERE meal_log_id IN (SELECT id FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')))");
+        
+        // 6. Meal log (child of daily_log)
+        jdbcTemplate.execute("DELETE FROM meal_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
+        
+        // 7. Exercise log (child of daily_log)
+        jdbcTemplate.execute("DELETE FROM exercise_log WHERE daily_log_entry_id IN (SELECT id FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
+        
+        // 8. Daily logs
+        jdbcTemplate.execute("DELETE FROM daily_log WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        
+        // 9. Transactions
+        jdbcTemplate.execute("DELETE FROM transaction WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        
+        // 10. FCM tokens
+        jdbcTemplate.execute("DELETE FROM fcm_token WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        
+        // 11. Dietary restrictions (child of health_profile)
+        jdbcTemplate.execute("DELETE FROM dietary_restriction WHERE user_health_profile_id IN (SELECT id FROM user_health_profile WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN'))");
+        
+        // 12. Health profiles
+        jdbcTemplate.execute("DELETE FROM user_health_profile WHERE account_id IN (SELECT id FROM account WHERE role != 'ADMIN')");
+        
+        // 13. Non-admin accounts
+        jdbcTemplate.execute("DELETE FROM account WHERE role != 'ADMIN'");
+        
+        // Truncate independent/reference tables
         jdbcTemplate.execute("TRUNCATE TABLE hospital_speciality RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_speciality RESTART IDENTITY CASCADE");
-        
-        // Delete tables with foreign keys to icd11 first
         jdbcTemplate.execute("TRUNCATE TABLE dietary_restriction RESTART IDENTITY CASCADE");
-        
-        // Delete other independent tables (these don't have account references)
         jdbcTemplate.execute("TRUNCATE TABLE food_nutrient RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE food_item RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE food_type RESTART IDENTITY CASCADE");
@@ -190,10 +164,10 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
         jdbcTemplate.execute("TRUNCATE TABLE icd11_code RESTART IDENTITY CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE icd11_chapter RESTART IDENTITY CASCADE");
         
-        // Clear persistence context to remove stale entity references
+        // Clear persistence context again after all deletions
         entityManager.clear();
         
-        return countBefore;
+        return countBefore != null ? countBefore : 0;
     }
 
     /**
