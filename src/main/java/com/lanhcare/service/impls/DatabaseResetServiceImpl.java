@@ -689,7 +689,10 @@ public class DatabaseResetServiceImpl implements DatabaseResetService {
                 .duration(new BigDecimal("30"))
                 .caloriesOut(BigDecimal.ZERO)
                 .build();
-            exerciseLog.calculateEAT();
+            // Only calculate EAT if health profile exists
+            if (user1.getHealthProfile() != null) {
+                exerciseLog.calculateEAT();
+            }
             exerciseLogRepository.save(exerciseLog);
         }
 
