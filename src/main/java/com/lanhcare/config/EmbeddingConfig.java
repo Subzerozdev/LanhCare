@@ -1,6 +1,7 @@
 package com.lanhcare.config;
 
 import org.springframework.ai.openai.OpenAiEmbeddingModel;
+import org.springframework.ai.openai.OpenAiEmbeddingOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,13 +28,19 @@ public class EmbeddingConfig {
     @ConditionalOnProperty(name = "spring.ai.transformers.enabled", havingValue = "false", matchIfMissing = true)
     public OpenAiEmbeddingModel productionEmbeddingModel(
             @Value("${spring.ai.openai.api-key}") String apiKey,
-            @Value("${spring.ai.openai.embedding.base-url:https://generativelanguage.googleapis.com}") String baseUrl
+            @Value("${spring.ai.openai.embedding.base-url:https://generativelanguage.googleapis.com}") String baseUrl,
+            @Value("${spring.ai.openai.embedding.options.model:text-embedding-004}") String model
     ) {
         OpenAiApi openAiApi = OpenAiApi.builder()
                 .apiKey(apiKey)
                 .baseUrl(baseUrl)
+                .embeddingsPath("/v1beta/openai/embeddings")
                 .build();
 
-        return new OpenAiEmbeddingModel(openAiApi);
+        OpenAiEmbeddingOptions options = OpenAiEmbeddingOptions.builder()
+                .model(model)
+                .build();
+
+        return new OpenAiEmbeddingModel(openAiApi, options);
     }
 }
