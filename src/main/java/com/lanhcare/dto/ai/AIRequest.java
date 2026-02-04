@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AIRequest {
     private String message;
-//    private String conversationId;
+    private String conversationId;
     private Boolean isSpeech;
-//    private String token;
-//    private Boolean isMember;
+    private String token;
+    private Boolean isMember;
+    private Object createOrderRequest;
 }

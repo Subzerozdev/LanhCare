@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "UserHealthProfile")
+@Table(name = "user_health_profile")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

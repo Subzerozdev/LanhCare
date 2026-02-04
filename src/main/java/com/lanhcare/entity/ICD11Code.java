@@ -78,5 +78,6 @@ public class ICD11Code {
             joinColumns = @JoinColumn(name = "icd_uri"),
             inverseJoinColumns = @JoinColumn(name = "speciality_id")
     )
+    @Builder.Default
     private List<MedicalSpecialty> medicalSpecialties = new ArrayList<>();
 }

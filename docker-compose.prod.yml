@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  lanhcare-api:
+    image: lanhcare-api:latest
+    container_name: lanhcare-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Production profile
+      - SPRING_PROFILES_ACTIVE=prod
+      - TZ=Asia/Ho_Chi_Minh
+      
+      # Database
+      - SPRING_DATASOURCE_URL=${DB_URL}
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=false
+      
+      # JWT
+      - APP_JWT_SECRET=${JWT_SECRET}
+      - APP_JWT_EXPIRATION_MS=86400000
+      
+      # Cloudinary
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      
+      # AI Configuration (Gemini)
+      - AI_API_KEY=${AI_API_KEY}
+      - AI_BASE_URL=https://generativelanguage.googleapis.com
+      - AI_MODEL=gemini-2.5-flash
+      - AI_COMPLETION_PATH=/v1beta/openai/chat/completions
+      - AI_EMBEDDING_BASE_URL=https://generativelanguage.googleapis.com
+      - AI_EMBEDDING_MODEL=text-embedding-004
+      - VECTOR_DIMENSIONS=768
+      
+      # PgVector Tables
+      - RAG_TABLE=rag_vector_store
+      - RAG_MEMORY=chat_memory_vector_store
+      
+      # TTS API
+      - TTS_API_URL=https://osi30-texttospeed-api.hf.space/
+      
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    mem_limit: 1g
+    cpus: 1.0
+
+networks:
+  default:
+    name: lanhcare-network

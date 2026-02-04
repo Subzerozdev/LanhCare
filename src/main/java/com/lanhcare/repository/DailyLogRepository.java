@@ -6,8 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface DailyLogRepository extends JpaRepository<DailyLog, Integer> {
     Optional<DailyLog> findByAccountIdAndLoggedDate(Integer accountId, LocalDate loggedDate);
+    
+    /**
+     * Find all daily logs by account ID (for deletion)
+     */
+    List<DailyLog> findByAccountId(Integer accountId);
 }

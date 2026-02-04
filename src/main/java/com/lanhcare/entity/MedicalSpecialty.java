@@ -19,10 +19,12 @@ public class MedicalSpecialty {
     private Integer id;
 
     @ManyToMany(mappedBy = "medicalSpecialties")
-    private List<Hospital> hospital;
+    @Builder.Default
+    private List<Hospital> hospital = new java.util.ArrayList<>();
 
     @ManyToMany(mappedBy = "medicalSpecialties")
-    private List<ICD11Code> icdCode;
+    @Builder.Default
+    private List<ICD11Code> icdCode = new java.util.ArrayList<>();
 
     @Column(name = "name_vn")
     private String nameVn;

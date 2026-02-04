@@ -22,10 +22,11 @@ public class AIController {
 
     @PostMapping("/prompt")
     public ResponseEntity<?> promptAI(
-            @RequestBody AIRequest request
+            @RequestBody AIRequest request,
+            @RequestHeader(value = "Authorization", required = false) String token
     ) throws IOException {
-//        request.setIsMember(token != null);
-//        request.setToken(token);
+        request.setIsMember(token != null);
+        request.setToken(token);
         log.info("AI Request Received: {}", request);
         AIResponse response = aiService.generateResponse(request);
         return new ResponseEntity<>(response, HttpStatus.OK);

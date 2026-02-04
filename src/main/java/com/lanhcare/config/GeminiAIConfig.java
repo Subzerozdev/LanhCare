@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
-import org.springframework.ai.embedding.EmbeddingModel;
+
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.BufferedReader;
@@ -27,24 +27,20 @@ public class GeminiAIConfig {
                 .maxMessages(5)
                 .build();
     }
-//
-////    @Bean
-////    @Primary
-////    public EmbeddingModel primaryEmbeddingModel(@Qualifier("embeddingModel") EmbeddingModel embeddingModel) {
-////        return embeddingModel;
-////    }
-//
+
+
+
     @Bean
     public ChatClient chatClient(
-            ChatClient.Builder chatClient
-//            @Qualifier("ragVectorStore") VectorStore ragVectorStore
+            ChatClient.Builder chatClient,
+            @Qualifier("ragVectorStore") VectorStore ragVectorStore
     ) {
         // 1. Instructions
         String systemInstructions = readSystemInstructions();
 
         return chatClient
                 .defaultSystem(systemInstructions)
-//                .defaultAdvisors(new QuestionAnswerAdvisor(ragVectorStore))
+                .defaultAdvisors(new QuestionAnswerAdvisor(ragVectorStore))
                 .build();
     }
 

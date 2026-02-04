@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "CommentMedia")
+@Table(name = "comment_media")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -188,14 +188,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - no authentication required
                         .requestMatchers(
+                                "/",                       // Root endpoint
                                 "/api/auth/**",           // Authentication endpoints
                                 "/api/public/**",         // Public API endpoints
                                 "/test/**",               // Test API endpoints
-                                "/actuator/health",       // Health check
-                                "/actuator/info",         // Info endpoint
+                                "/actuator/**",           // All actuator endpoints
                                 "/v3/api-docs/**",        // OpenAPI docs
+                                "/v3/api-docs",           // OpenAPI docs base
                                 "/swagger-ui/**",         // Swagger UI
-                                "/swagger-ui.html"        // Swagger UI HTML
+                                "/swagger-ui.html",       // Swagger UI HTML
+                                "/swagger-resources/**",  // Swagger resources
+                                "/webjars/**",            // Webjars for Swagger
+                                "/favicon.ico",           // Favicon
+                                "/error"                  // Error page
                         ).permitAll()
                         
                         // Admin-only endpoints

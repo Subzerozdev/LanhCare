@@ -18,24 +18,28 @@ import java.util.List;
 public interface MedicalSpecialtyRepository extends JpaRepository<MedicalSpecialty, Integer> {
     
     /**
-     * Find specialties by hospital ID
+     * Find specialties by hospital ID (Many-to-Many relationship)
      */
-    List<MedicalSpecialty> findByHospitalId(Integer hospitalId);
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId")
+    List<MedicalSpecialty> findByHospitalId(@Param("hospitalId") Integer hospitalId);
     
     /**
      * Find specialties by hospital ID ordered by Vietnamese name
      */
-    List<MedicalSpecialty> findByHospitalIdOrderByNameVnAsc(Integer hospitalId);
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId ORDER BY ms.nameVn ASC")
+    List<MedicalSpecialty> findByHospitalIdOrderByNameVnAsc(@Param("hospitalId") Integer hospitalId);
     
     /**
      * Find specialties by hospital ID and status
      */
-    List<MedicalSpecialty> findByHospitalIdAndStatus(Integer hospitalId, SpecialtyStatus status);
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId AND ms.status = :status")
+    List<MedicalSpecialty> findByHospitalIdAndStatus(@Param("hospitalId") Integer hospitalId, @Param("status") SpecialtyStatus status);
     
     /**
      * Find specialties by hospital ID with pagination
      */
-    Page<MedicalSpecialty> findByHospitalId(Integer hospitalId, Pageable pageable);
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId")
+    Page<MedicalSpecialty> findByHospitalId(@Param("hospitalId") Integer hospitalId, Pageable pageable);
     
     /**
      * Find specialties by status with pagination
@@ -45,21 +49,20 @@ public interface MedicalSpecialtyRepository extends JpaRepository<MedicalSpecial
     /**
      * Find specialties by hospital ID and status with pagination
      */
-    Page<MedicalSpecialty> findByHospitalIdAndStatus(Integer hospitalId, SpecialtyStatus status, Pageable pageable);
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId AND ms.status = :status")
+    Page<MedicalSpecialty> findByHospitalIdAndStatus(@Param("hospitalId") Integer hospitalId, @Param("status") SpecialtyStatus status, Pageable pageable);
     
     /**
-     * Find specialties by ICD code URI with pagination
+     * Find specialties by ICD code URI with pagination (Many-to-Many relationship)
      */
-    Page<MedicalSpecialty> findByIcdCodeIcdUri(String icdUri, Pageable pageable);
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.icdCode icd WHERE icd.icdUri = :icdUri")
+    Page<MedicalSpecialty> findByIcdCodeIcdUri(@Param("icdUri") String icdUri, Pageable pageable);
     
     /**
      * Search specialties by name (Vietnamese or English) and hospital
      */
-    @Query("SELECT ms " +
-            "FROM MedicalSpecialty ms " +
-            "JOIN Hospital h ON h.id = :hospitalId " +
-            "WHERE " +
-           "(LOWER(ms.nameVn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId " +
+           "AND (LOWER(ms.nameVn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(ms.nameEn) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<MedicalSpecialty> searchByHospitalIdAndName(@Param("hospitalId") Integer hospitalId,
                                                       @Param("search") String search,
@@ -68,10 +71,9 @@ public interface MedicalSpecialtyRepository extends JpaRepository<MedicalSpecial
     /**
      * Search specialties by name (Vietnamese or English), hospital and status
      */
-    @Query("SELECT ms " +
-            "FROM MedicalSpecialty ms " +
-            "JOIN Hospital h ON h.id = :hospitalId " +
-            "WHERE " +           "(LOWER(ms.nameVn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+    @Query("SELECT DISTINCT ms FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId " +
+           "AND ms.status = :status " +
+           "AND (LOWER(ms.nameVn) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(ms.nameEn) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<MedicalSpecialty> searchByHospitalIdAndStatusAndName(@Param("hospitalId") Integer hospitalId,
                                                                 @Param("status") SpecialtyStatus status,
@@ -81,10 +83,6 @@ public interface MedicalSpecialtyRepository extends JpaRepository<MedicalSpecial
     /**
      * Count specialties by hospital ID
      */
-    long countByHospitalId(Integer hospitalId);
-    
-    /**
-     * Delete all specialties by hospital ID
-     */
-    void deleteByHospitalId(Integer hospitalId);
+    @Query("SELECT COUNT(DISTINCT ms) FROM MedicalSpecialty ms JOIN ms.hospital h WHERE h.id = :hospitalId")
+    long countByHospitalId(@Param("hospitalId") Integer hospitalId);
 }
