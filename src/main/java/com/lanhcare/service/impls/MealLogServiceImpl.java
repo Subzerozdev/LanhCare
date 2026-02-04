@@ -105,7 +105,7 @@ public class MealLogServiceImpl implements MealLogService {
 
     @Override
     public List<MealLogResponse> getByDailyLogId(Integer dailyLogId) {
-        return mealLogRepository.findByDailyLogId(dailyLogId).stream()
+        return mealLogRepository.findByDailyLog_Id(dailyLogId).stream()
                 .map(this::mapToResponse)
                 .toList();
     }

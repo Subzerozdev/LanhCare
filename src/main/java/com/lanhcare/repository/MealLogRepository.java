@@ -47,5 +47,5 @@ public interface MealLogRepository extends JpaRepository<MealLog, Integer> {
 
     Page<MealLog> findAll(Specification<MealLog> spec, Pageable pageable);
 
-    List<MealLog> findByDailyLogId(Integer dailyLogId);
+    List<MealLog> findByDailyLog_Id(Integer dailyLogId);
 }
