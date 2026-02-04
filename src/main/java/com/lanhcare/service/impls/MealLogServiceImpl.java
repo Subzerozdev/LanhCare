@@ -87,6 +87,7 @@ public class MealLogServiceImpl implements MealLogService {
         dailyLogRepository.save(dailyLog);
     }
 
+    @Transactional
     @Override
     public Page<MealLogResponse> getByAccountId(int accountId, Pageable pageable, Map<String, String> criteria) {
         if (accountId == 0) {
@@ -103,6 +104,7 @@ public class MealLogServiceImpl implements MealLogService {
         return mealLogs.map(this::mapToResponse);
     }
 
+    @Transactional
     @Override
     public List<MealLogResponse> getByDailyLogId(Integer dailyLogId) {
         return mealLogRepository.findByDailyLog_Id(dailyLogId).stream()
