@@ -78,6 +78,7 @@ public class ExerciseLogServiceImpl implements ExerciseLogService {
                 .orElseThrow(() -> new ExerciseException("Không tìm thấy nhật ký bài tập"));
     }
 
+    @Transactional
     @Override
     public List<ExerciseLogResponse> getByDailyLogId(Integer dailyLogId) {
         return exerciseLogRepository.findByDailyLogId(dailyLogId).stream()
