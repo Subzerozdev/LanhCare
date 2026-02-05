@@ -22,7 +22,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/admin/nutrition")
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Admin - Nutrition Management", description = "Admin APIs for managing food items, types, and nutrients")
 public class AdminNutritionController {
     
