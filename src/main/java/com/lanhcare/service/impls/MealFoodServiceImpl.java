@@ -93,6 +93,7 @@ public class MealFoodServiceImpl implements MealFoodService {
     }
 
     @Override
+    @Transactional
     public List<MealFoodResponse> getByMeal(int mealId) {
         return mealFoodRepository.findByMealLogId(mealId).stream()
                 .map(this::mapToResponse)
