@@ -72,7 +72,7 @@ public class DailyLog {
     /// weighKg x steps x 0.0006125
     public BigDecimal calculateNEAT(BigDecimal weightKg){
         return weightKg
-                .multiply(BigDecimal.valueOf(stepAmount))
+                .multiply(BigDecimal.valueOf(stepAmount == null ? 0 : stepAmount))
                 .multiply(BigDecimal.valueOf(0.0006125));
     }
 

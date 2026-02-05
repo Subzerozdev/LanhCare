@@ -32,7 +32,7 @@ public class DailyLogServiceImpl implements DailyLogService {
 
         DailyLog dailyLog = DailyLog.builder()
                 .loggedDate(request.getLoggedDate())
-                .stepAmount(request.getStepAmount())
+                .stepAmount(request.getStepAmount() == null ? 0 : request.getStepAmount())
                 .account(account)
                 .totalCaloriesIn(BigDecimal.ZERO)
                 .totalCaloriesOut(BigDecimal.ZERO)
