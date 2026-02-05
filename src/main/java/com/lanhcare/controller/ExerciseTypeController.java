@@ -14,13 +14,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/exercise-types")
-@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/api/public/exercise-types")
 @RequiredArgsConstructor
-@Tag(name = "Admin - Exercise Type", description = "APIs for managing exercise categories and MET values")
+@Tag(name = "User - Exercise Type", description = "APIs for managing exercise categories and MET values")
 public class ExerciseTypeController {
     private final ExerciseTypeService exerciseTypeService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Operation(summary = "Create exercise type", description = "Add a new exercise category with its MET value (Admin only)")
     public ResponseEntity<ApiResponse<ExerciseTypeResponse>> create(
@@ -56,6 +56,7 @@ public class ExerciseTypeController {
                 exerciseTypeService.getById(id))));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     @Operation(summary = "Update exercise type", description = "Modify an existing exercise type's data")
     public ResponseEntity<ApiResponse<ExerciseTypeResponse>> update(
@@ -66,6 +67,7 @@ public class ExerciseTypeController {
                 exerciseTypeService.update(id, request))));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete exercise type", description = "Remove an exercise type from the system")
     public ResponseEntity<ApiResponse<Void>> delete(
