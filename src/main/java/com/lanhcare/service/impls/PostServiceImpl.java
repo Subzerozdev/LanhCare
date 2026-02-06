@@ -9,7 +9,11 @@ import com.lanhcare.exception.exps.LanhCareException;
 import com.lanhcare.repository.AccountRepository;
 import com.lanhcare.repository.PostRepository;
 import com.lanhcare.service.PostService;
+import com.lanhcare.specification.PostSpec;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -74,6 +78,13 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         post.setIsDeleted(true);
         postRepository.save(post);
+    }
+
+    @Override
+    public Page<PostResponse> getPostsByCriteria(String search, Pageable pageable) {
+        Specification<Post> specification = PostSpec.filterByCriteria(search);
+        Page<Post> postPage = postRepository.findAll(specification, pageable);
+        return postPage.map(this::mapToPostResponse);
     }
 
     @Override
