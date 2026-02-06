@@ -138,4 +138,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                                            @Param("endDate") LocalDateTime endDate);
 
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
+
+    List<Post> getPostsByAccount_Id(int accountId);
 }

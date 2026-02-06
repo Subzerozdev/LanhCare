@@ -15,6 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +88,13 @@ public class PostServiceImpl implements PostService {
         Specification<Post> specification = PostSpec.filterByCriteria(search);
         Page<Post> postPage = postRepository.findAll(specification, pageable);
         return postPage.map(this::mapToPostResponse);
+    }
+
+    @Override
+    @Transactional
+    public List<PostResponse> getPostsByAccount(int accountId) {
+        List<Post> posts = postRepository.getPostsByAccount_Id(accountId);
+        return posts.stream().map(this::mapToPostResponse).toList();
     }
 
     @Override

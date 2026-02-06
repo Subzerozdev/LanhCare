@@ -6,6 +6,8 @@ import com.lanhcare.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 
 public interface PostService {
     Post createPost(PostRequest request);
@@ -17,4 +19,6 @@ public interface PostService {
     void deletePost(Integer id);
 
     Page<PostResponse> getPostsByCriteria(String search, Pageable pageable);
+
+    List<PostResponse> getPostsByAccount(int accountId);
 }

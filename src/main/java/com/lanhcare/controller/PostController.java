@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/public/posts")
@@ -50,15 +51,16 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("Post retrieved successfully", post));
     }
 
-//    @GetMapping
-//    @Operation(summary = "Get all posts", description = "Get paginated list of posts with filters")
-//    public ResponseEntity<ApiResponse<Page<PostResponse>>> getAllFoodItems(
-//            @RequestParam(required = false) String search,
-//            Pageable pageable)
-//    {
-//        Page<PostResponse> posts = postService.getPostsByCriteria(search, pageable);
-//        return ResponseEntity.ok(ApiResponse.success("Food items retrieved successfully", posts));
-//    }
+    @GetMapping("/account")
+    @Operation(summary = "Get account posts", description = "Get list of posts by account")
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getAllFoodItems(
+            @RequestHeader("Authorization") String token
+    ) {
+        int accountId = Integer.parseInt( jwtTokenProvider.getIdentifierFromToken(token));
+
+        List<PostResponse> posts = postService.getPostsByAccount(accountId);
+        return ResponseEntity.ok(ApiResponse.success("Posts retrieved successfully", posts));
+    }
 
     @PostMapping
     public ResponseEntity<PostResponse> create(
