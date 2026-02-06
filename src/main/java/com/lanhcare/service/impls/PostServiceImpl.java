@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +58,8 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        post.setContent(request.getContent());
-        post.setHeart(request.getHeart());
+        Optional.ofNullable(request.getHeart()).ifPresent(post::setHeart);
+        Optional.ofNullable(request.getContent()).ifPresent(post::setContent);
 
         if (request.getMediaUrls() != null) {
             post.getMediaList().clear();
