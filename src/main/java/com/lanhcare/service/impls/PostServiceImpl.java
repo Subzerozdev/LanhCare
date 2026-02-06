@@ -27,6 +27,7 @@ public class PostServiceImpl implements PostService {
     private final AccountRepository accountRepository;
 
     @Override
+    @Transactional
     public Post createPost(PostRequest request) {
         Account account = accountRepository.findById(request.getAccountId())
                 .orElseThrow(() -> new LanhCareException("Account not found"));
@@ -54,6 +55,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public Post updatePost(Integer id, PostRequest request) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -77,6 +79,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void deletePost(Integer id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -94,7 +97,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public List<PostResponse> getPostsByAccount(int accountId) {
-        List<Post> posts = postRepository.getPostsByAccount_Id(accountId);
+        List<Post> posts = postRepository.getPostsByAccount_IdAndIsDeletedFalse(accountId);
         return posts.stream().map(this::mapToPostResponse).toList();
     }
 

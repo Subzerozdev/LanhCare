@@ -139,5 +139,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
 
-    List<Post> getPostsByAccount_Id(int accountId);
+    List<Post> getPostsByAccount_IdAndIsDeletedFalse(int accountId);
 }
