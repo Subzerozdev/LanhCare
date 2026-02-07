@@ -13,6 +13,7 @@ import com.lanhcare.repository.PostRepository;
 import com.lanhcare.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
+    @Transactional
     public Comment createComment(CommentRequest request) {
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new LanhCareException("Post not found"));
@@ -61,6 +63,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public Comment updateComment(Integer id, CommentRequest request) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
@@ -77,6 +80,7 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(comment);
     }
 
+    @Transactional
     @Override
     public void deleteComment(Integer id) {
         Comment comment = commentRepository.findById(id)
@@ -100,6 +104,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public List<CommentResponse> getTopLevelComments(Integer postId) {
         List<Comment> comments = commentRepository
                 .findByPostIdAndParentCommentIsNullAndIsDeletedFalseOrderByCreatedAtDesc(postId);
@@ -110,6 +115,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public List<CommentResponse> getRepliesByParentId(Integer parentId) {
         List<Comment> replies = commentRepository
                 .findByParentCommentIdAndIsDeletedFalseOrderByCreatedAtAsc(parentId);
