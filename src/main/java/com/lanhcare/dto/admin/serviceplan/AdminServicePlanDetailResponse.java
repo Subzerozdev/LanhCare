@@ -27,4 +27,5 @@ public class AdminServicePlanDetailResponse {
     private Long transactionCount;
     private Long activeSubscriptions;
     private BigDecimal totalRevenue;
+    private String features;
 }

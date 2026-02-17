@@ -25,4 +25,5 @@ public class AdminServicePlanResponse {
     private PeriodUnit periodUnit;
     private ServicePlanStatus status;
     private Long transactionCount;
+    private String features;
 }

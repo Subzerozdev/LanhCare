@@ -31,4 +31,5 @@ public class AdminUpdateServicePlanRequest {
     
     private PeriodUnit periodUnit;
     private ServicePlanStatus status;
+    private String features;
 }

@@ -94,6 +94,7 @@ public class AdminServicePlanService {
                 .periodValue(request.getPeriodValue())
                 .periodUnit(request.getPeriodUnit())
                 .status(request.getStatus() != null ? request.getStatus() : ServicePlanStatus.ACTIVE)
+                .features(request.getFeatures())
                 .build();
         
         ServicePlan saved = servicePlanRepository.save(plan);
@@ -125,6 +126,9 @@ public class AdminServicePlanService {
         }
         if (request.getStatus() != null) {
             plan.setStatus(request.getStatus());
+        }
+        if (request.getFeatures() != null) {
+            plan.setFeatures(request.getFeatures());
         }
         
         ServicePlan updated = servicePlanRepository.save(plan);
@@ -170,6 +174,7 @@ public class AdminServicePlanService {
                 .periodUnit(plan.getPeriodUnit())
                 .status(plan.getStatus())
                 .transactionCount(transactionCount)
+                .features(plan.getFeatures())
                 .build();
     }
     
@@ -198,6 +203,7 @@ public class AdminServicePlanService {
                 .transactionCount(transactionCount)
                 .activeSubscriptions(activeSubscriptions)
                 .totalRevenue(totalRevenue)
+                .features(plan.getFeatures())
                 .build();
     }
 }

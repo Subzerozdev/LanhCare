@@ -42,8 +42,15 @@ public class ServicePlan {
     @Builder.Default
     private ServicePlanStatus status = ServicePlanStatus.ACTIVE;
     
+    @Column(columnDefinition = "TEXT")
+    private String features;  // Comma-separated feature codes, e.g. "DAILY_LOG,AI_CHAT,FORUM_POST"
+    
     // Relationships
     @OneToMany(mappedBy = "servicePlan", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Transaction> transactions = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "servicePlan", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Subscription> subscriptions = new ArrayList<>();
 }

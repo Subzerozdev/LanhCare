@@ -39,4 +39,6 @@ public class AdminCreateServicePlanRequest {
     private PeriodUnit periodUnit;
     
     private ServicePlanStatus status;
+    
+    private String features;  // Comma-separated feature codes, e.g. "DAILY_LOG,AI_CHAT,FORUM_POST"
 }

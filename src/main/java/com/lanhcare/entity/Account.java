@@ -61,6 +61,11 @@ public class Account {
     @JsonIgnore
     @Builder.Default
     private List<DailyLog> dailyLogs = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @Builder.Default
+    private List<Subscription> subscriptions = new ArrayList<>();
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
