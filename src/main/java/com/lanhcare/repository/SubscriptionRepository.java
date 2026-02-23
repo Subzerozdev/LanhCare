@@ -28,4 +28,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
      * Check if account has an active subscription
      */
     boolean existsByAccountIdAndStatus(Integer accountId, SubscriptionStatus status);
+
+    /**
+     * Find subscription by transaction ID (for polling after payment)
+     */
+    Optional<Subscription> findByTransactionId(Integer transactionId);
 }

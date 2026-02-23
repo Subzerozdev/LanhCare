@@ -5,6 +5,7 @@ import com.lanhcare.dto.subscription.PurchaseResponse;
 import com.lanhcare.dto.subscription.PurchaseSubscriptionRequest;
 import com.lanhcare.dto.subscription.SubscriptionResponse;
 import com.lanhcare.dto.subscription.TransactionHistoryResponse;
+import com.lanhcare.dto.subscription.TransactionStatusResponse;
 import com.lanhcare.security.JwtTokenProvider;
 import com.lanhcare.service.SubscriptionService;
 import com.lanhcare.service.VNPayService;
@@ -121,5 +122,21 @@ public class SubscriptionController {
         return ResponseEntity.ok(ApiResponse.success(
                 hasFeature ? "Feature available" : "Feature requires subscription upgrade",
                 hasFeature));
+    }
+
+    /**
+     * Get transaction status (for mobile polling after VNPay payment)
+     */
+    @GetMapping("/transactions/{transactionId}/status")
+    @Operation(summary = "Get transaction status",
+               description = "Poll transaction status after VNPay payment. Mobile app calls this to check if payment is completed.")
+    public ResponseEntity<ApiResponse<TransactionStatusResponse>> getTransactionStatus(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Integer transactionId) {
+
+        int accountId = Integer.parseInt(jwtTokenProvider.getIdentifierFromToken(token));
+        TransactionStatusResponse status = subscriptionService.getTransactionStatus(transactionId, accountId);
+
+        return ResponseEntity.ok(ApiResponse.success("Transaction status retrieved", status));
     }
 }

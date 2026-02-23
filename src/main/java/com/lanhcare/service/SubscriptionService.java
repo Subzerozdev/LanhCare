@@ -4,6 +4,7 @@ import com.lanhcare.dto.subscription.PurchaseResponse;
 import com.lanhcare.dto.subscription.PurchaseSubscriptionRequest;
 import com.lanhcare.dto.subscription.SubscriptionResponse;
 import com.lanhcare.dto.subscription.TransactionHistoryResponse;
+import com.lanhcare.dto.subscription.TransactionStatusResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -42,4 +43,9 @@ public interface SubscriptionService {
      * Check if user has a specific feature based on their subscription
      */
     boolean hasFeature(Integer accountId, String featureCode);
+
+    /**
+     * Get transaction status for mobile polling after VNPay payment
+     */
+    TransactionStatusResponse getTransactionStatus(Integer transactionId, Integer accountId);
 }

@@ -4,6 +4,7 @@ import com.lanhcare.dto.subscription.PurchaseResponse;
 import com.lanhcare.dto.subscription.PurchaseSubscriptionRequest;
 import com.lanhcare.dto.subscription.SubscriptionResponse;
 import com.lanhcare.dto.subscription.TransactionHistoryResponse;
+import com.lanhcare.dto.subscription.TransactionStatusResponse;
 import com.lanhcare.entity.Account;
 import com.lanhcare.entity.ServicePlan;
 import com.lanhcare.entity.Subscription;
@@ -244,6 +245,39 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         return features.contains(featureCode);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TransactionStatusResponse getTransactionStatus(Integer transactionId, Integer accountId) {
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giao dịch với ID: " + transactionId));
+
+        // Verify transaction belongs to this account
+        if (!transaction.getAccount().getId().equals(accountId)) {
+            throw new SecurityException("Bạn không có quyền xem giao dịch này");
+        }
+
+        // Build response
+        TransactionStatusResponse.TransactionStatusResponseBuilder builder = TransactionStatusResponse.builder()
+                .transactionId(transaction.getId())
+                .status(transaction.getStatus().name())
+                .planName(transaction.getServicePlan().getName())
+                .planId(transaction.getServicePlan().getId());
+
+        // Set message based on status
+        switch (transaction.getStatus()) {
+            case PENDING -> builder.message("Đang chờ thanh toán");
+            case COMPLETED -> {
+                builder.message("Thanh toán thành công");
+                // Find the subscription created from this transaction
+                subscriptionRepository.findByTransactionId(transactionId)
+                        .ifPresent(sub -> builder.subscriptionId(sub.getId()));
+            }
+            case FAILED -> builder.message("Thanh toán thất bại");
+        }
+
+        return builder.build();
     }
 
     // ========== Private Helper Methods ==========

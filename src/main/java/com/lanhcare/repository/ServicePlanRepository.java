@@ -21,7 +21,12 @@ public interface ServicePlanRepository extends JpaRepository<ServicePlan, Intege
      * Find all active service plans
      */
     List<ServicePlan> findByStatus(ServicePlanStatus status);
-    
+
+    /**
+     * Find active plans ordered by price (for mobile app)
+     */
+    List<ServicePlan> findByStatusOrderByPriceAsc(ServicePlanStatus status);
+
     /**
      * Find all active plans
      */

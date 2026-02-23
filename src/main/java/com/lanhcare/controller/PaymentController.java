@@ -73,11 +73,12 @@ public class PaymentController {
     /**
      * VNPay Return URL - Browser redirect after payment
      * User's browser is redirected here after completing payment on VNPay
-     * This endpoint shows the payment result to the user
+     * For mobile: redirects to deep link lanhcare://payment-result
+     * For web: shows HTML result page with deep link auto-redirect
      */
     @GetMapping("/vnpay-return")
     @Operation(summary = "VNPay return URL", 
-               description = "Return URL for VNPay to redirect user's browser after payment")
+               description = "Return URL for VNPay to redirect user's browser after payment. Redirects to mobile deep link.")
     public void vnpayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Map<String, String> params = extractParams(request);
         log.info("VNPay Return received: {}", params);
@@ -91,56 +92,42 @@ public class PaymentController {
 
         String responseCode = params.get("vnp_ResponseCode");
         String txnRef = params.get("vnp_TxnRef");
+        String status = "00".equals(responseCode) ? "success" : "failed";
 
-        // Redirect to mobile app via deep link or show HTML result
-        if ("00".equals(responseCode)) {
-            // Payment successful - redirect to success page
-            // For mobile app, you can use custom scheme: lanhcare://payment-success?txnRef=xxx
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().write(
-                    "<!DOCTYPE html><html><head><meta charset='UTF-8'>" +
-                    "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
-                    "<title>Thanh toán thành công</title>" +
-                    "<style>" +
-                    "body{font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f0f9f0;}" +
-                    ".container{text-align:center;padding:40px;background:white;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:400px;}" +
-                    ".icon{font-size:64px;margin-bottom:16px;}" +
-                    ".title{font-size:24px;color:#22c55e;margin-bottom:8px;}" +
-                    ".desc{color:#666;margin-bottom:24px;}" +
-                    ".info{background:#f8f8f8;padding:12px;border-radius:8px;text-align:left;margin-bottom:16px;}" +
-                    ".btn{background:#22c55e;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;display:inline-block;}" +
-                    "</style></head><body>" +
-                    "<div class='container'>" +
-                    "<div class='icon'>✅</div>" +
-                    "<div class='title'>Thanh toán thành công!</div>" +
-                    "<div class='desc'>Gói dịch vụ đã được kích hoạt</div>" +
-                    "<div class='info'><strong>Mã giao dịch:</strong> " + txnRef + "</div>" +
-                    "<p class='desc'>Bạn có thể đóng trang này và quay lại ứng dụng.</p>" +
-                    "</div></body></html>"
-            );
-        } else {
-            // Payment failed
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().write(
-                    "<!DOCTYPE html><html><head><meta charset='UTF-8'>" +
-                    "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
-                    "<title>Thanh toán thất bại</title>" +
-                    "<style>" +
-                    "body{font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#fef2f2;}" +
-                    ".container{text-align:center;padding:40px;background:white;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:400px;}" +
-                    ".icon{font-size:64px;margin-bottom:16px;}" +
-                    ".title{font-size:24px;color:#ef4444;margin-bottom:8px;}" +
-                    ".desc{color:#666;margin-bottom:24px;}" +
-                    ".btn{background:#ef4444;color:white;padding:12px 32px;border-radius:8px;text-decoration:none;display:inline-block;}" +
-                    "</style></head><body>" +
-                    "<div class='container'>" +
-                    "<div class='icon'>❌</div>" +
-                    "<div class='title'>Thanh toán thất bại</div>" +
-                    "<div class='desc'>Mã lỗi: " + responseCode + "</div>" +
-                    "<p class='desc'>Vui lòng thử lại hoặc chọn phương thức thanh toán khác.</p>" +
-                    "</div></body></html>"
-            );
-        }
+        // Deep link for React Native app
+        String deepLink = String.format("lanhcare://payment-result?status=%s&txnRef=%s&responseCode=%s",
+                status, txnRef, responseCode);
+
+        // Return HTML page that auto-redirects to deep link
+        // If deep link doesn't work (e.g., opened in external browser), show result page
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write(
+                "<!DOCTYPE html><html><head><meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<title>Kết quả thanh toán</title>" +
+                "<style>" +
+                "body{font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;" +
+                "background:" + ("success".equals(status) ? "#f0f9f0" : "#fef2f2") + ";}" +
+                ".container{text-align:center;padding:40px;background:white;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:400px;}" +
+                ".icon{font-size:64px;margin-bottom:16px;}" +
+                ".title{font-size:24px;color:" + ("success".equals(status) ? "#22c55e" : "#ef4444") + ";margin-bottom:8px;}" +
+                ".desc{color:#666;margin-bottom:24px;}" +
+                ".info{background:#f8f8f8;padding:12px;border-radius:8px;text-align:left;margin-bottom:16px;}" +
+                ".btn{background:" + ("success".equals(status) ? "#22c55e" : "#ef4444") + ";color:white;padding:12px 32px;border-radius:8px;text-decoration:none;display:inline-block;}" +
+                "</style></head><body>" +
+                "<div class='container'>" +
+                "<div class='icon'>" + ("success".equals(status) ? "✅" : "❌") + "</div>" +
+                "<div class='title'>" + ("success".equals(status) ? "Thanh toán thành công!" : "Thanh toán thất bại") + "</div>" +
+                "<div class='desc'>" + ("success".equals(status) ? "Gói dịch vụ đã được kích hoạt" : "Mã lỗi: " + responseCode) + "</div>" +
+                "<div class='info'><strong>Mã giao dịch:</strong> " + txnRef + "</div>" +
+                "<a class='btn' href='" + deepLink + "'>Quay lại ứng dụng</a>" +
+                "<p class='desc' style='margin-top:16px;font-size:12px;'>Đang chuyển về ứng dụng...</p>" +
+                "</div>" +
+                "<script>" +
+                "setTimeout(function(){window.location.href='" + deepLink + "';}, 1500);" +
+                "</script>" +
+                "</body></html>"
+        );
     }
 
     /**
