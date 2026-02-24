@@ -40,6 +40,7 @@ public class EmbeddingConfig {
 
         OpenAiEmbeddingOptions options = OpenAiEmbeddingOptions.builder()
                 .model(model)
+                .dimensions(768)
                 .build();
 
         return new OpenAiEmbeddingModel(openAiApi, MetadataMode.EMBED, options);
