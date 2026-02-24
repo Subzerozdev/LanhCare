@@ -141,6 +141,24 @@ public class GlobalExceptionHandler {
     }
     
     /**
+     * Handle feature not available exceptions (403) - Subscription gating
+     */
+    @ExceptionHandler(FeatureNotAvailableException.class)
+    public ResponseEntity<ErrorResponse> handleFeatureNotAvailable(
+            FeatureNotAvailableException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                "Feature Not Available",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    /**
      * Handle access denied exceptions (403)
      */
     @ExceptionHandler(AccessDeniedException.class)

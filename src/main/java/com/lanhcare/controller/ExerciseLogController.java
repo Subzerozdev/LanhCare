@@ -1,5 +1,6 @@
 package com.lanhcare.controller;
 
+import com.lanhcare.annotation.RequiresFeature;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.exerciselog.ExerciseLogRequest;
 import com.lanhcare.dto.exerciselog.ExerciseLogResponse;
@@ -20,6 +21,7 @@ public class ExerciseLogController {
     private final ExerciseLogService exerciseLogService;
 
     @PostMapping
+    @RequiresFeature("EXERCISE_LOG")
     @Operation(summary = "Add exercise activity", description = "Log a new physical activity and recalculate daily calories out")
     public ResponseEntity<ApiResponse<ExerciseLogResponse>> add(
             @RequestBody ExerciseLogRequest request
@@ -48,6 +50,7 @@ public class ExerciseLogController {
     }
 
     @PutMapping("/{id}")
+    @RequiresFeature("EXERCISE_LOG")
     @Operation(summary = "Update exercise log", description = "Update duration or exercise type, then recalculate all related calories")
     public ResponseEntity<ApiResponse<ExerciseLogResponse>> update(
             @PathVariable Integer id,

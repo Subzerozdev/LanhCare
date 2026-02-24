@@ -35,6 +35,7 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final JwtTokenProvider jwtTokenProvider;
     private final VNPayService vnPayService;
+    private final com.lanhcare.service.FeatureGateService featureGateService;
 
     /**
      * Get current user's active subscription
@@ -122,6 +123,22 @@ public class SubscriptionController {
         return ResponseEntity.ok(ApiResponse.success(
                 hasFeature ? "Feature available" : "Feature requires subscription upgrade",
                 hasFeature));
+    }
+
+    /**
+     * Get feature quota (usage/limit info)
+     */
+    @GetMapping("/features/{featureCode}/quota")
+    @Operation(summary = "Get feature quota",
+               description = "Get usage and limit info for a quota-limited feature (MEAL_LOG, EXERCISE_LOG, AI_CHAT)")
+    public ResponseEntity<ApiResponse<com.lanhcare.dto.subscription.FeatureQuotaResponse>> getFeatureQuota(
+            @RequestHeader("Authorization") String token,
+            @PathVariable String featureCode) {
+
+        int accountId = Integer.parseInt(jwtTokenProvider.getIdentifierFromToken(token));
+        com.lanhcare.dto.subscription.FeatureQuotaResponse quota = featureGateService.getQuota(accountId, featureCode);
+
+        return ResponseEntity.ok(ApiResponse.success("Feature quota retrieved", quota));
     }
 
     /**

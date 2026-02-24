@@ -1,5 +1,6 @@
 package com.lanhcare.controller;
 
+import com.lanhcare.annotation.RequiresFeature;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.meallog.MealLogRequest;
 import com.lanhcare.dto.meallog.MealLogResponse;
@@ -21,6 +22,7 @@ public class MealLogController {
     private final MealLogService mealLogService;
 
     @PostMapping
+    @RequiresFeature("MEAL_LOG")
     @Operation(summary = "Create meal log", description = "Record a new meal (Breakfast, Lunch, etc.)")
     public ResponseEntity<ApiResponse<MealLogResponse>> create(
             @RequestBody MealLogRequest request
@@ -49,6 +51,7 @@ public class MealLogController {
     }
 
     @PutMapping("/{id}")
+    @RequiresFeature("MEAL_LOG")
     @Operation(summary = "Update meal log info")
     public ResponseEntity<ApiResponse<MealLogResponse>> update(
             @PathVariable Integer id,

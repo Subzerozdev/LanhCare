@@ -1,5 +1,6 @@
 package com.lanhcare.controller;
 
+import com.lanhcare.annotation.RequiresFeature;
 import com.lanhcare.dto.admin.post.AdminPostDetailResponse;
 import com.lanhcare.dto.admin.post.AdminPostResponse;
 import com.lanhcare.dto.common.ApiResponse;
@@ -63,6 +64,7 @@ public class PostController {
     }
 
     @PostMapping
+    @RequiresFeature("FORUM_POST")
     public ResponseEntity<PostResponse> create(
             @RequestBody PostRequest request,
             @RequestHeader("Authorization") String token
@@ -76,6 +78,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
+    @RequiresFeature("FORUM_POST")
     public ResponseEntity<PostResponse> update(@PathVariable Integer id, @RequestBody PostRequest request) {
         return ResponseEntity.ok(postService.mapToPostResponse(
                 postService.updatePost(id, request)
@@ -83,6 +86,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
+    @RequiresFeature("FORUM_POST")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         postService.deletePost(id);
         return ResponseEntity.ok().build();
