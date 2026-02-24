@@ -33,7 +33,7 @@ services:
       - AI_MODEL=gemini-2.5-flash
       - AI_COMPLETION_PATH=/v1beta/openai/chat/completions
       - AI_EMBEDDING_BASE_URL=https://generativelanguage.googleapis.com
-      - AI_EMBEDDING_MODEL=text-embedding-004
+      - AI_EMBEDDING_MODEL=text-embedding-005
       - VECTOR_DIMENSIONS=768
       
       # PgVector Tables
