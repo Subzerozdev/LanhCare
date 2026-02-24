@@ -30,7 +30,7 @@ public class EmbeddingConfig {
     public OpenAiEmbeddingModel productionEmbeddingModel(
             @Value("${spring.ai.openai.api-key}") String apiKey,
             @Value("${spring.ai.openai.embedding.base-url:https://generativelanguage.googleapis.com}") String baseUrl,
-            @Value("${spring.ai.openai.embedding.options.model:text-embedding-005}") String model
+            @Value("${spring.ai.openai.embedding.options.model:gemini-embedding-001}") String model
     ) {
         OpenAiApi openAiApi = OpenAiApi.builder()
                 .apiKey(apiKey)
