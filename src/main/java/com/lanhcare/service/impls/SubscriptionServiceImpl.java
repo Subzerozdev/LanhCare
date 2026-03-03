@@ -2,6 +2,7 @@ package com.lanhcare.service.impls;
 
 import com.lanhcare.dto.subscription.PurchaseResponse;
 import com.lanhcare.dto.subscription.PurchaseSubscriptionRequest;
+import com.lanhcare.dto.subscription.SepayPurchaseResponse;
 import com.lanhcare.dto.subscription.SubscriptionResponse;
 import com.lanhcare.dto.subscription.TransactionHistoryResponse;
 import com.lanhcare.dto.subscription.TransactionStatusResponse;
@@ -17,6 +18,7 @@ import com.lanhcare.repository.AccountRepository;
 import com.lanhcare.repository.ServicePlanRepository;
 import com.lanhcare.repository.SubscriptionRepository;
 import com.lanhcare.repository.TransactionRepository;
+import com.lanhcare.service.SepayService;
 import com.lanhcare.service.SubscriptionService;
 import com.lanhcare.service.VNPayService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +47,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final VNPayService vnPayService;
+    private final SepayService sepayService;
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -136,6 +139,57 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .transactionId(transaction.getId())
                 .paymentUrl(paymentUrl)
                 .build();
+    }
+
+    @Override
+    public SepayPurchaseResponse purchaseSubscriptionSepay(Integer accountId, PurchaseSubscriptionRequest request) {
+        // 1. Check if user already has an active subscription (same logic as VNPay)
+        Optional<Subscription> existingSub = subscriptionRepository
+                .findByAccountIdAndStatus(accountId, SubscriptionStatus.ACTIVE);
+
+        if (existingSub.isPresent()) {
+            Subscription sub = existingSub.get();
+            if (sub.getEndDate().isAfter(LocalDateTime.now())) {
+                if (sub.getServicePlan().getId().equals(request.getServicePlanId())) {
+                    throw new IllegalStateException("Bạn đã đăng ký gói này rồi. Gói hiện tại còn hiệu lực đến " 
+                            + sub.getEndDate().format(DATE_FORMAT));
+                }
+                sub.setStatus(SubscriptionStatus.CANCELLED);
+                subscriptionRepository.save(sub);
+                log.info("Cancelled existing subscription {} for account {} during SePay upgrade", sub.getId(), accountId);
+            } else {
+                sub.setStatus(SubscriptionStatus.EXPIRED);
+                subscriptionRepository.save(sub);
+            }
+        }
+
+        // 2. Get the service plan
+        ServicePlan plan = servicePlanRepository.findById(request.getServicePlanId())
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy gói dịch vụ với ID: " + request.getServicePlanId()));
+
+        if (plan.getStatus() != ServicePlanStatus.ACTIVE) {
+            throw new IllegalStateException("Gói dịch vụ này hiện không khả dụng");
+        }
+
+        // 3. Get the account
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản với ID: " + accountId));
+
+        // 4. Create Transaction (PENDING) with SEPAY payment method
+        Transaction transaction = Transaction.builder()
+                .account(account)
+                .servicePlan(plan)
+                .amount(plan.getPrice())
+                .paymentMethod("SEPAY")
+                .status(TransactionStatus.PENDING)
+                .build();
+        transaction = transactionRepository.save(transaction);
+
+        log.info("Created SePay pending transaction {} for account {} purchasing plan {}", 
+                transaction.getId(), accountId, plan.getName());
+
+        // 5. Create payment info with QR code
+        return sepayService.createPaymentInfo(transaction.getId(), plan.getPrice().longValue());
     }
 
     @Override

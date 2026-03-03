@@ -43,6 +43,13 @@ services:
       # TTS API
       - TTS_API_URL=https://osi30-texttospeed-api.hf.space/
       
+      # SePay Configuration
+      - SEPAY_API_KEY=${SEPAY_API_KEY}
+      - SEPAY_BANK_NAME=${SEPAY_BANK_NAME}
+      - SEPAY_ACCOUNT_NUMBER=${SEPAY_ACCOUNT_NUMBER}
+      - SEPAY_ACCOUNT_HOLDER=${SEPAY_ACCOUNT_HOLDER}
+      - SEPAY_PREFIX=LC
+      
     restart: unless-stopped
     logging:
       driver: "json-file"

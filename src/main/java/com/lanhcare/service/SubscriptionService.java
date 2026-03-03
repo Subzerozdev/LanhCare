@@ -2,6 +2,7 @@ package com.lanhcare.service;
 
 import com.lanhcare.dto.subscription.PurchaseResponse;
 import com.lanhcare.dto.subscription.PurchaseSubscriptionRequest;
+import com.lanhcare.dto.subscription.SepayPurchaseResponse;
 import com.lanhcare.dto.subscription.SubscriptionResponse;
 import com.lanhcare.dto.subscription.TransactionHistoryResponse;
 import com.lanhcare.dto.subscription.TransactionStatusResponse;
@@ -20,9 +21,14 @@ public interface SubscriptionService {
     SubscriptionResponse getMySubscription(Integer accountId);
 
     /**
-     * Purchase a subscription plan
+     * Purchase a subscription plan via VNPay
      */
     PurchaseResponse purchaseSubscription(Integer accountId, PurchaseSubscriptionRequest request, String ipAddress);
+
+    /**
+     * Purchase a subscription plan via SePay (bank transfer / QR code)
+     */
+    SepayPurchaseResponse purchaseSubscriptionSepay(Integer accountId, PurchaseSubscriptionRequest request);
 
     /**
      * Cancel the current active subscription
@@ -45,7 +51,7 @@ public interface SubscriptionService {
     boolean hasFeature(Integer accountId, String featureCode);
 
     /**
-     * Get transaction status for mobile polling after VNPay payment
+     * Get transaction status for mobile polling after VNPay/SePay payment
      */
     TransactionStatusResponse getTransactionStatus(Integer transactionId, Integer accountId);
 }

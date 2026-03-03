@@ -3,6 +3,7 @@ package com.lanhcare.controller;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.subscription.PurchaseResponse;
 import com.lanhcare.dto.subscription.PurchaseSubscriptionRequest;
+import com.lanhcare.dto.subscription.SepayPurchaseResponse;
 import com.lanhcare.dto.subscription.SubscriptionResponse;
 import com.lanhcare.dto.subscription.TransactionHistoryResponse;
 import com.lanhcare.dto.subscription.TransactionStatusResponse;
@@ -75,6 +76,25 @@ public class SubscriptionController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.created("Payment URL created. Redirect to VNPay to complete payment.", response));
+    }
+
+    /**
+     * Purchase a subscription via SePay (bank transfer / QR code)
+     */
+    @PostMapping("/purchase-sepay")
+    @Operation(summary = "Purchase subscription via SePay", 
+               description = "Purchase a subscription plan via bank transfer. Returns QR code URL and bank info for payment.")
+    public ResponseEntity<ApiResponse<SepayPurchaseResponse>> purchaseSubscriptionSepay(
+            @RequestHeader("Authorization") String token,
+            @Valid @RequestBody PurchaseSubscriptionRequest request) {
+
+        int accountId = Integer.parseInt(jwtTokenProvider.getIdentifierFromToken(token));
+
+        SepayPurchaseResponse response = subscriptionService.purchaseSubscriptionSepay(accountId, request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.created("QR code created. Scan with banking app to complete payment.", response));
     }
 
     /**
