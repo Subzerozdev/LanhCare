@@ -104,6 +104,11 @@ public class AuthService {
             Account account = accountRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new AuthenticationException("Invalid credentials"));
 
+            // Verify password
+            if (account.getPassword() == null || !passwordEncoder.matches(request.getPassword(), account.getPassword())) {
+                throw new AuthenticationException("Invalid credentials");
+            }
+
             // Generate JWT token
             String token = jwtTokenProvider.generateToken(authenticate(account));
 
