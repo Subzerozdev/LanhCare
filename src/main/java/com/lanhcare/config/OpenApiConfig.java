@@ -1,12 +1,9 @@
 package com.lanhcare.config;
 
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +27,7 @@ public class OpenApiConfig {
     
     @Bean
     public OpenAPI customOpenAPI() {
-        // Security scheme for JWT
-        final String securitySchemeName = "bearerAuth";
+
         
         // Build server list dynamically
         List<Server> servers = new ArrayList<>();
@@ -60,7 +56,7 @@ public class OpenApiConfig {
                                 "meal tracking, and wellness features.\n\n" +
                                 "**Authentication**: Most endpoints require JWT authentication. " +
                                 "Use the `/api/auth/login` or `/api/auth/register` endpoint to get a token, " +
-                                "then click the 'Authorize' button and enter: `Bearer <your-token>`")
+                                "then enter `Bearer <your-token>` in the Authorization field of each endpoint.")
                         .contact(new Contact()
                                 .name("LanhCare Team")
                                 .email("support@lanhcare.com")
@@ -68,17 +64,6 @@ public class OpenApiConfig {
                         .license(new License()
                                 .name("LanhCare © 2024")
                                 .url("https://lanhcare.com/license")))
-                .servers(servers)
-                // Add JWT security scheme
-                .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
-                                new SecurityScheme()
-                                        .name(securitySchemeName)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                                        .description("Enter JWT token obtained from /api/auth/login or /api/auth/register")))
-                // Apply security globally
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName));
+                .servers(servers);
     }
 }
