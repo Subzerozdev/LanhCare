@@ -51,8 +51,9 @@ public class SepayServiceImpl implements SepayService {
 
     @Override
     public SepayPurchaseResponse createPaymentInfo(Integer transactionId, long amount) {
-        // Generate unique transfer content using prefix + transactionId
-        String content = transactionPrefix + transactionId;
+        // Generate unique transfer content: SEVQR prefix required by VietinBank API Banking
+        // Format: "SEVQR {prefix}{transactionId}" e.g., "SEVQR LC8"
+        String content = "SEVQR " + transactionPrefix + transactionId;
 
         // Build VietQR URL via SePay
         String qrCodeUrl = String.format(
@@ -161,7 +162,7 @@ public class SepayServiceImpl implements SepayService {
 
     /**
      * Extract transaction ID from transfer content.
-     * Content format: "{prefix}{transactionId}" (e.g., "LC42")
+     * Content format: "SEVQR {prefix}{transactionId}" (e.g., "SEVQR LC42")
      * SePay may append extra text, so we search for the prefix pattern.
      */
     private Integer extractTransactionId(String content) {
