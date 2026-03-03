@@ -97,7 +97,6 @@ public class AuthController {
         return ResponseEntity.ok("Authentication service is running");
     }
 
-    @SecurityRequirement(name = "BearerAuth")
     @PostMapping("/google/android-callback")
     public ResponseEntity<String> callbackAndroid(
             @AuthenticationPrincipal Jwt jwt

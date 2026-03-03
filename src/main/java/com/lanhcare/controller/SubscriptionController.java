@@ -11,7 +11,6 @@ import com.lanhcare.security.JwtTokenProvider;
 import com.lanhcare.service.SubscriptionService;
 import com.lanhcare.service.VNPayService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -30,7 +29,6 @@ import java.util.List;
 @RequestMapping("/api/subscriptions")
 @RequiredArgsConstructor
 @Tag(name = "User - Subscription", description = "APIs for managing user subscriptions")
-@SecurityRequirement(name = "bearerAuth")
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;

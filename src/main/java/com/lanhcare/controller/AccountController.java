@@ -5,7 +5,6 @@ import com.lanhcare.dto.account.UpdateAccountRequest;
 import com.lanhcare.security.JwtTokenProvider;
 import com.lanhcare.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/accounts")
 @Tag(name = "Accounts", description = "Account management endpoints")
-@SecurityRequirement(name = "bearerAuth")
 public class AccountController {
     
     private final AccountService accountService;
