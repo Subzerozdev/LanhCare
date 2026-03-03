@@ -16,4 +16,9 @@ public interface DailyLogRepository extends JpaRepository<DailyLog, Integer> {
      * Find all daily logs by account ID (for deletion)
      */
     List<DailyLog> findByAccountId(Integer accountId);
+
+    /**
+     * Find daily logs within a date range for health reports
+     */
+    List<DailyLog> findByAccountIdAndLoggedDateBetween(Integer accountId, LocalDate from, LocalDate to);
 }

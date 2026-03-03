@@ -1,5 +1,6 @@
 package com.lanhcare.controller;
 
+import com.lanhcare.annotation.RequiresFeature;
 import com.lanhcare.dto.common.ApiResponse;
 import com.lanhcare.dto.subscription.PurchaseResponse;
 import com.lanhcare.dto.subscription.PurchaseSubscriptionRequest;
@@ -8,8 +9,7 @@ import com.lanhcare.dto.subscription.SubscriptionResponse;
 import com.lanhcare.dto.subscription.TransactionHistoryResponse;
 import com.lanhcare.dto.subscription.TransactionStatusResponse;
 import com.lanhcare.security.JwtTokenProvider;
-import com.lanhcare.service.SubscriptionService;
-import com.lanhcare.service.VNPayService;
+import com.lanhcare.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +34,10 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
     private final JwtTokenProvider jwtTokenProvider;
     private final VNPayService vnPayService;
-    private final com.lanhcare.service.FeatureGateService featureGateService;
+    private final FeatureGateService featureGateService;
+    private final HealthReportService healthReportService;
+    private final PdfExportService pdfExportService;
+    private final DashboardProService dashboardProService;
 
     /**
      * Get current user's active subscription
@@ -173,5 +176,73 @@ public class SubscriptionController {
         TransactionStatusResponse status = subscriptionService.getTransactionStatus(transactionId, accountId);
 
         return ResponseEntity.ok(ApiResponse.success("Transaction status retrieved", status));
+    }
+
+    // ============================================================
+    //  PREMIUM FEATURES: Health Report, Dashboard Pro, PDF Export
+    // ============================================================
+
+    /**
+     * Weekly health report (Basic plan+)
+     */
+    @GetMapping("/report/weekly")
+    @RequiresFeature("HEALTH_REPORT_WEEKLY")
+    @Operation(summary = "Get weekly health report",
+               description = "Returns 7-day summary of calories, steps, meals, exercises. Requires Basic plan or above.")
+    public ResponseEntity<ApiResponse<com.lanhcare.dto.subscription.HealthReportResponse>> getWeeklyReport(
+            @RequestHeader("Authorization") String token) {
+        int accountId = Integer.parseInt(jwtTokenProvider.getIdentifierFromToken(token));
+        var report = healthReportService.getWeeklyReport(accountId);
+        return ResponseEntity.ok(ApiResponse.success("Weekly health report", report));
+    }
+
+    /**
+     * Full health report with daily details + tips (Premium plan)
+     */
+    @GetMapping("/report/full")
+    @RequiresFeature("HEALTH_REPORT_FULL")
+    @Operation(summary = "Get full health report",
+               description = "Returns detailed report with daily breakdown and health tips. Requires Premium plan.")
+    public ResponseEntity<ApiResponse<com.lanhcare.dto.subscription.HealthReportResponse>> getFullReport(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate from,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate to) {
+        int accountId = Integer.parseInt(jwtTokenProvider.getIdentifierFromToken(token));
+        var report = healthReportService.getFullReport(accountId, from, to);
+        return ResponseEntity.ok(ApiResponse.success("Full health report", report));
+    }
+
+    /**
+     * Export health report as PDF (Premium plan)
+     */
+    @GetMapping("/report/export-pdf")
+    @RequiresFeature("EXPORT_PDF")
+    @Operation(summary = "Export health report as PDF",
+               description = "Download health report as PDF file. Requires Premium plan.")
+    public ResponseEntity<byte[]> exportPdf(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate from,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate to) {
+        int accountId = Integer.parseInt(jwtTokenProvider.getIdentifierFromToken(token));
+        byte[] pdf = pdfExportService.exportHealthReport(accountId, from, to);
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=lanhcare-report.pdf")
+                .body(pdf);
+    }
+
+    /**
+     * Dashboard Pro with trends, streaks, exercise rankings (Premium plan)
+     */
+    @GetMapping("/dashboard-pro")
+    @RequiresFeature("DASHBOARD_PRO")
+    @Operation(summary = "Get Dashboard Pro data",
+               description = "Returns advanced dashboard with weekly trends, streak, top exercises, nutrition breakdown. Requires Premium plan.")
+    public ResponseEntity<ApiResponse<com.lanhcare.dto.subscription.DashboardProResponse>> getDashboardPro(
+            @RequestHeader("Authorization") String token) {
+        int accountId = Integer.parseInt(jwtTokenProvider.getIdentifierFromToken(token));
+        var dashboard = dashboardProService.getDashboard(accountId);
+        return ResponseEntity.ok(ApiResponse.success("Dashboard Pro data", dashboard));
     }
 }
