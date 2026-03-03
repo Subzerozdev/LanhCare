@@ -17,12 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
@@ -36,6 +32,9 @@ import java.util.List;
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
     @Value("${app.jwt.secret}")
     private String jwtKey;
 
@@ -45,26 +44,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException
     {
-        String jwt = request.getHeader("Authorization");
-        if (jwt != null) {
-            jwt = jwt.substring(7);
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwt = authHeader.substring(7);
 
             try {
-
                 SecretKey key = Keys.hmacShaKeyFor(jwtKey.getBytes());
                 Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(jwt).getPayload();
                 String identifier = claims.get("identifier", String.class);
                 String role = claims.get("authorities", String.class);
                 updateAuthentication(identifier, role);
+                log.debug("JWT authenticated user: {}, role: {}, path: {}",
+                        identifier, role, request.getRequestURI());
 
             } catch (ExpiredJwtException exception) {
+                log.warn("Expired JWT token for path: {}", request.getRequestURI());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The token is expired!");
+                return;
             } catch (MalformedJwtException e) {
+                log.warn("Malformed JWT token for path: {}", request.getRequestURI());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The token is not valid!");
+                return;
             } catch (Exception e) {
+                log.warn("JWT validation failed for path: {} - {}", request.getRequestURI(), e.getMessage());
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token validation failed");
+                return;
             }
+        } else if (authHeader != null) {
+            log.warn("Authorization header present but does not start with 'Bearer ': path={}", 
+                    request.getRequestURI());
         }
+
         filterChain.doFilter(request, response);
     }
 
