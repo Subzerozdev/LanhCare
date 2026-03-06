@@ -189,6 +189,7 @@ public class SecurityConfig {
                         // Public endpoints - no authentication required
                         .requestMatchers(
                                 "/",                       // Root endpoint
+                                "/api/media/upload",
                                 "/api/auth/**",           // Authentication endpoints
                                 "/api/public/**",         // Public API endpoints
                                 "/test/**",               // Test API endpoints
