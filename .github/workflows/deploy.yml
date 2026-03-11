@@ -61,6 +61,9 @@ jobs:
             CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
             CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
             AI_API_KEY=${{ secrets.AI_API_KEY }}
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            MAIL_FROM=${{ secrets.MAIL_FROM }}
+            MAIL_VERIFY_URL=${{ secrets.MAIL_VERIFY_URL }}
             EOF
             
             # Run new container

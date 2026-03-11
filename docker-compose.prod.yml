@@ -50,6 +50,11 @@ services:
       - SEPAY_ACCOUNT_HOLDER=NGUYEN GIA KHANH
       - SEPAY_PREFIX=LC
       
+      # Mail (Resend) Configuration
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_VERIFY_URL=${MAIL_VERIFY_URL}
+      
     restart: unless-stopped
     logging:
       driver: "json-file"
