@@ -190,6 +190,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",                       // Root endpoint
                                 "/api/media/upload",
+                                "/api/deletion-requests/**",
                                 "/api/auth/**",           // Authentication endpoints
                                 "/api/public/**",         // Public API endpoints
                                 "/test/**",               // Test API endpoints
