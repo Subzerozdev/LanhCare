@@ -10,3 +10,4 @@ import java.util.List;
 public interface FCMTokenRepository extends JpaRepository<FCMToken, Integer> {
     List<FCMToken> findByAccountId(Integer accountId);
 }
+
