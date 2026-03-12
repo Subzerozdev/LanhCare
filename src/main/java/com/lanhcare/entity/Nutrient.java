@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,9 +32,12 @@ public class Nutrient {
     // Relationships
     @OneToMany(mappedBy = "nutrient", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonIgnore
     private List<FoodNutrient> foodNutrients = new ArrayList<>();
     
     @OneToMany(mappedBy = "nutrient", cascade = CascadeType.ALL)
     @Builder.Default
+    @JsonIgnore
     private List<DietaryRestriction> dietaryRestrictions = new ArrayList<>();
 }
+

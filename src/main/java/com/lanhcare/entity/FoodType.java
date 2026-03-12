@@ -1,5 +1,6 @@
 package com.lanhcare.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,5 +29,7 @@ public class FoodType {
     // Relationships
     @OneToMany(mappedBy = "foodType", cascade = CascadeType.ALL)
     @Builder.Default
+    @JsonIgnore
     private List<FoodItem> foodItems = new ArrayList<>();
 }
+
