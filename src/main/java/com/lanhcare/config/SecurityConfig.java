@@ -125,6 +125,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",  // Next.js dev server
                 "http://localhost:3001",
+                "http://localhost:5173",  // Vite dev server
                 "https://your-production-domain.com",  // Replace with your production domain
                 "http://10.0.2.2:8080",
                 "http://localhost:3000",      // Next.js dev server
@@ -132,7 +133,10 @@ public class SecurityConfig {
                 "http://localhost:8080",      // Local Spring Boot
                 "http://127.0.0.1:3000",
                 "http://127.0.0.1:8080",
-                "https://lanhcare.onrender.com"  // Render deployment
+                "https://lanhcare.onrender.com",  // Render deployment
+                "https://admin.lanhcare.id.vn",   // Admin UI production
+                "https://lanhcare.id.vn",          // Landing page production
+                "https://www.lanhcare.id.vn"       // Landing page www
         ));
         
         // Allow Render.com and other production domains using patterns
@@ -141,6 +145,7 @@ public class SecurityConfig {
                 "https://*.onrender.com",     // All Render.com subdomains
                 "https://*.vercel.app",       // Vercel deployments
                 "https://*.netlify.app",      // Netlify deployments
+                "https://*.lanhcare.id.vn",   // All LanhCare subdomains
                 "https://your-production-domain.com"  // Replace with your actual domain
         ));
         
